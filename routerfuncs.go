@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/dilungasr/radi"
-	tz "github.com/dilungasr/tanzanite"
 )
 
 // On method is adding the Event handlers to the router
@@ -36,9 +35,9 @@ func SendTicket(r *http.Request, w http.ResponseWriter, ID string) {
 	}
 	expireTime := string(expireTimeBytes)
 	// get the user IP
-	IP, err := tz.GetIP(r)
+	IP, err := GetIP(r)
 	if err != nil {
-		tz.Send(w, 400, tz.Map{"msg": "Bad request!"})
+		jsonSender(w, 400, Msg("Bad Request!"))
 		return
 	}
 
@@ -51,6 +50,6 @@ func SendTicket(r *http.Request, w http.ResponseWriter, ID string) {
 	Router1.tickets = append(Router1.tickets, newTicket)
 
 	// send the ticket to the client
-	tz.Send(w, tz.Map{"ticket": encTicket})
+	jsonSender(w, 200, Map{"ticket": encTicket})
 
 }

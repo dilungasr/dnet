@@ -43,6 +43,7 @@ func AuthLink(link string) (userID, linkID string, status int) {
 
 	//check if the link has expired
 	if time.Now().Local().After(expireTime) {
+		// remove the ticket from the router
 		return userID, linkID, 0
 	}
 

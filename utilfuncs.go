@@ -1,6 +1,8 @@
 package dnet
 
 import (
+	"encoding/json"
+	"net/http"
 	"strings"
 	"time"
 
@@ -70,4 +72,15 @@ func ticketParts(ticketString string, c ...*Context) (ID, IP, expireTime string,
 	}
 
 	return ticketPartsSlice[0], ticketPartsSlice[1], ticketPartsSlice[2], true
+}
+
+// jsonSender json internally using the http.ResponseWriter
+func jsonSender(w http.ResponseWriter, statusCode int, data interface{}) {
+	// set the mime type
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	// write the status code
+	w.WriteHeader(statusCode)
+
+	// Send the json
+	json.NewEncoder(w).Encode(data)
 }

@@ -28,7 +28,7 @@ var hub *Hub = &Hub{
 func Init(options ...Options) {
 	// makesure that Init is called only once
 	if hub.hasInitialized {
-		panic("Dnet: Dnet cannot be initialized more than once")
+		panic("dnet: Dnet cannot be initialized more than once")
 	}
 
 	//take ticketAge configurations if user has configured the time for ticket to expire
@@ -45,6 +45,7 @@ func Init(options ...Options) {
 	hub.hasInitialized = true
 	fmt.Println("Dnet initialized...")
 	go hub.Run()
+	go Router1.ticketCleaner()
 }
 
 // Run method is for starting the Hub
