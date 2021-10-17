@@ -42,5 +42,5 @@ func GetIP(r *http.Request) (ip string, err error) {
 	}
 
 	// if no valid ip found
-	return "", fmt.Errorf("No valid IP Address found ")
+	return "", fmt.Errorf("dnet: no valid IP Address found ")
 }
