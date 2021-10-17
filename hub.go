@@ -31,14 +31,17 @@ func Init(options ...Options) {
 		panic("dnet: Dnet cannot be initialized more than once")
 	}
 
-	//take ticketAge configurations if user has configured the time for ticket to expire
-	if options[0].TicketAge > 0 {
-		Router1.ticketAge = options[0].TicketAge
-	}
+	//  update Router options if user gave any
+	if len(options) > 0 {
+		//take ticketAge configurations if user has configured the time for ticket to expire
+		if options[0].TicketAge > 0 {
+			Router1.ticketAge = options[0].TicketAge
+		}
 
-	//take maximum message size configuration if user set
-	if options[0].MaxSize > 0 {
-		Router1.maxSize = options[0].MaxSize
+		//take maximum message size configuration if user set
+		if options[0].MaxSize > 0 {
+			Router1.maxSize = options[0].MaxSize
+		}
 	}
 
 	//mark that Init has been called to prevent future repeated calling of this function
