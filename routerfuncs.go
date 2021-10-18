@@ -9,7 +9,7 @@ import (
 
 // On method is adding the Event handlers to the router
 func On(action string, handlers ...ActionHandler) {
-	Router1.actionHandlers[action] = handlers
+	router.actionHandlers[action] = handlers
 }
 
 // Router is for grouping the actions by matching their paths
@@ -19,17 +19,17 @@ func Router(path string) RouterMatcher {
 
 // Use is for adding middlewares to the root of the dnet action path
 func Use(handlers ...ActionHandler) {
-	Router1.routeMatchers["/"] = append(Router1.routeMatchers["/"], handlers...)
+	router.routeMatchers["/"] = append(router.routeMatchers["/"], handlers...)
 }
 
 // SendTicket sends an encrypted ticket to the use and saves the clean one the router
 func SendTicket(r *http.Request, w http.ResponseWriter, ID string) {
 	// if the ticketSecrete and the iv set...... wer are ready to go
-	secreteKey := Router1.ticketSecrete
-	iv := Router1.ticketIV
+	secreteKey := router.ticketSecrete
+	iv := router.ticketIV
 
 	// plain data(not encrypted)
-	expireTimeBytes, err := time.Now().Local().Add(Router1.ticketAge).MarshalText()
+	expireTimeBytes, err := time.Now().Local().Add(router.ticketAge).MarshalText()
 	if err != nil {
 		panic(err)
 	}
@@ -46,8 +46,8 @@ func SendTicket(r *http.Request, w http.ResponseWriter, ID string) {
 
 	encTicket := radi.Encrypt(newTicket, secreteKey, iv)
 
-	// save the ticket in the Router1
-	Router1.tickets = append(Router1.tickets, newTicket)
+	// save the ticket in the router
+	router.tickets = append(router.tickets, newTicket)
 
 	// send the ticket to the client
 	jsonSender(w, 200, Map{"ticket": encTicket})

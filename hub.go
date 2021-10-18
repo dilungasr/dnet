@@ -35,12 +35,12 @@ func Init(options ...Options) {
 	if len(options) > 0 {
 		//take ticketAge configurations if user has configured the time for ticket to expire
 		if options[0].TicketAge > 0 {
-			Router1.ticketAge = options[0].TicketAge
+			router.ticketAge = options[0].TicketAge
 		}
 
 		//take maximum message size configuration if user set
 		if options[0].MaxSize > 0 {
-			Router1.maxSize = options[0].MaxSize
+			router.maxSize = options[0].MaxSize
 		}
 	}
 
@@ -48,7 +48,7 @@ func Init(options ...Options) {
 	hub.hasInitialized = true
 	fmt.Println("Dnet initialized...")
 	go hub.Run()
-	go Router1.ticketCleaner()
+	go router.ticketCleaner()
 }
 
 // Run method is for starting the Hub

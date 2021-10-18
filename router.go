@@ -16,7 +16,7 @@ type Options struct {
 	MaxSize   int64
 }
 
-// MainRouter is for routing websocket actions
+// MainRouter routes websocket actions
 type MainRouter struct {
 	// routeMatchers is matching the middleware the given path prefixes
 	routeMatchers map[string][]ActionHandler
@@ -41,7 +41,7 @@ type MainRouter struct {
 	ticketAge time.Duration
 }
 
-//Route is for routing websocket actions based on the incoming action
+//Route performs routing websocket actions based on the incoming action
 func (r *MainRouter) Route(IncomingAction string, context *Context) {
 	if len(r.routeMatchers) > 0 {
 		for path, handlers := range r.routeMatchers {
@@ -134,10 +134,10 @@ func (r *MainRouter) lastSeen(c *Context) {
 // It's very useful for setting the last seen of the user connection
 func LastSeen(handler ActionHandler) {
 	//  the lastSeenHandler is set
-	Router1.isLastSeenHandlerSet = true
+	router.isLastSeenHandlerSet = true
 
 	// set it
-	Router1.lastSeenHandler = handler
+	router.lastSeenHandler = handler
 }
 
 // ticketCleaner is for cleaning or removing expired tickets from the router Tickets
@@ -177,17 +177,17 @@ type RouterMatcher struct {
 
 // On method is adding Event handlders to the router by prefixing it with the Matcher path
 func (m RouterMatcher) On(action string, handlers ...ActionHandler) {
-	Router1.actionHandlers[m.path+action] = handlers
+	router.actionHandlers[m.path+action] = handlers
 }
 
 //Use is for adding action route-wise middlewares
 func (m *RouterMatcher) Use(handlers ...ActionHandler) {
 	// append the given action handlers for matching the actioon-path beginning
-	Router1.routeMatchers[m.path] = append(Router1.routeMatchers[m.path], handlers...)
+	router.routeMatchers[m.path] = append(router.routeMatchers[m.path], handlers...)
 }
 
-// Router1 is websocket main router
-var Router1 *MainRouter = &MainRouter{
+// router is websocket main router
+var router *MainRouter = &MainRouter{
 	actionHandlers: make(map[string][]ActionHandler), routeMatchers: make(map[string][]ActionHandler),
 	ticketSecrete: radi.RandString(32), ticketIV: radi.RandBytes(16),
 	ticketAge: 30 * time.Second,

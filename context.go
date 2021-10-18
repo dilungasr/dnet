@@ -88,7 +88,7 @@ func (c *Context) readPump() {
 	}()
 
 	// configure the connection values
-	c.conn.SetReadLimit(Router1.maxSize)
+	c.conn.SetReadLimit(router.maxSize)
 	c.conn.SetReadDeadline(time.Now().Add(pongWait))
 	c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 
@@ -122,7 +122,7 @@ func (c *Context) readPump() {
 		c.Rec = msg.Rec
 
 		// routing user action
-		Router1.Route(msg.Action, c)
+		router.Route(msg.Action, c)
 	}
 }
 
@@ -162,7 +162,7 @@ func (c *Context) writePump() {
 
 // expireContet is for removing the expired context
 func (c *Context) expireContext() {
-	ticker := time.NewTicker(Router1.ticketAge)
+	ticker := time.NewTicker(router.ticketAge)
 
 	// remove the context if expired
 	select {
@@ -208,7 +208,7 @@ func Connect(w http.ResponseWriter, r *http.Request, allowedOrigin ...string) {
 	}
 
 	// create the Context...  mark user as not authenticated
-	expireTime := time.Now().Local().Add(Router1.ticketAge)
+	expireTime := time.Now().Local().Add(router.ticketAge)
 	context := &Context{hub: hub, send: make(chan interface{}, 256), conn: conn, authed: false, expireTime: expireTime, disposed: false, loggedout: false}
 	context.hub.register <- context
 

@@ -319,14 +319,14 @@ func (c *Context) AuthTicket(infoText ...string) (ID string, ok bool) {
 	}
 
 	//get the ticket string from the client to plain text
-	ticketString, valid := radi.Decrypt(ticketFromClient.Ticket, Router1.ticketSecrete, Router1.ticketIV)
+	ticketString, valid := radi.Decrypt(ticketFromClient.Ticket, router.ticketSecrete, router.ticketIV)
 	// if the ticketString is not avalid base64 string
 	if !valid {
 		c.SendBack(400, "Bad Request")
 		return ID, false
 	}
 
-	for i, ticket := range Router1.tickets {
+	for i, ticket := range router.tickets {
 		if ticketString == ticket {
 			ID, IP, expireTimeString, ok := ticketParts(ticket, c)
 			if !ok {
@@ -341,7 +341,7 @@ func (c *Context) AuthTicket(infoText ...string) (ID string, ok bool) {
 			// if the ticket expired
 			if time.Now().Local().After(expireTime) {
 				//  delete the ticket
-				Router1.tickets = append(Router1.tickets[:i], Router1.tickets[i+1:]...)
+				router.tickets = append(router.tickets[:i], router.tickets[i+1:]...)
 			} else {
 
 				c.IP = IP
@@ -413,7 +413,7 @@ func (c *Context) Dispose() {
 func (c *Context) Logout() {
 	c.loggedout = true
 	// set the last seen of the clinet connection
-	Router1.lastSeen(c)
+	router.lastSeen(c)
 
 	// unregister the clinet context
 	c.hub.unregister <- c

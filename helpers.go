@@ -20,7 +20,7 @@ import (
 //
 // 2 means everything is fine! and with this status you can get the user ID.
 func AuthLink(link string) (userID, linkID string, status int) {
-	plainLink, ok := radi.Decrypt(link, Router1.ticketSecrete, Router1.ticketIV)
+	plainLink, ok := radi.Decrypt(link, router.ticketSecrete, router.ticketIV)
 
 	if !ok {
 		return userID, linkID, 1
@@ -70,5 +70,5 @@ func NewLink(userID, linkID string, minutes ...time.Duration) (link string, err 
 
 	expireTimeString := string(expireTimeBytes)
 
-	return radi.Encrypt(userID+","+linkID+","+expireTimeString, Router1.ticketSecrete, Router1.ticketIV), nil
+	return radi.Encrypt(userID+","+linkID+","+expireTimeString, router.ticketSecrete, router.ticketIV), nil
 }
