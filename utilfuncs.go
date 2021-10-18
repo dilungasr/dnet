@@ -10,7 +10,7 @@ import (
 )
 
 //deleteContext is for deleting the context from the hub
-func deleteContext(c *Context) {
+func deleteContext(c *Ctx) {
 	if _, ok := c.hub.contexts[c]; ok {
 		delete(c.hub.contexts, c)
 		close(c.send)
@@ -59,7 +59,7 @@ func assignData(dataIndex, statusCode *int, statusAndCode []interface{}, funcNam
 }
 
 // ticketParts splits the ticket string to get the indiviadial elements
-func ticketParts(ticketString string, c ...*Context) (ID, IP, expireTime string, ok bool) {
+func ticketParts(ticketString string, c ...*Ctx) (ID, IP, expireTime string, ok bool) {
 	ticketPartsSlice := strings.Split(ticketString, ",")
 
 	// if it is a false ticket with less or more number of elements of slice

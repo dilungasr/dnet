@@ -2,22 +2,22 @@ package dnet
 
 import "fmt"
 
-// Hub is for maintaining chat app users
+// Hub maintains and manages dnet contexts
 type Hub struct {
-	contexts   map[*Context]bool
-	rooms      map[string][]*Context
-	register   chan *Context
-	unregister chan *Context
+	contexts   map[*Ctx]bool
+	rooms      map[string][]*Ctx
+	register   chan *Ctx
+	unregister chan *Ctx
 	// checks to see if user has started dnet hub monitoring or not
 	hasInitialized bool
 }
 
 // hub is a Hub instance to be used throught the application
 var hub *Hub = &Hub{
-	contexts:       make(map[*Context]bool),
-	rooms:          make(map[string][]*Context),
-	register:       make(chan *Context),
-	unregister:     make(chan *Context),
+	contexts:       make(map[*Ctx]bool),
+	rooms:          make(map[string][]*Ctx),
+	register:       make(chan *Ctx),
+	unregister:     make(chan *Ctx),
 	hasInitialized: false,
 }
 

@@ -12,7 +12,7 @@ import (
 // Written by Dilunga SR
 
 // Broadcast sends data to all execept the sender
-func (c *Context) Broadcast(statusAndData ...interface{}) {
+func (c *Ctx) Broadcast(statusAndData ...interface{}) {
 	dataIndex := 0
 	statusCode := 200
 
@@ -35,12 +35,12 @@ func (c *Context) Broadcast(statusAndData ...interface{}) {
 }
 
 // All sends to anyone connected to the websocket Dnet instance including the sender of the message
-func (c *Context) All(statusAndData ...interface{}) {
+func (c *Ctx) All(statusAndData ...interface{}) {
 	dataIndex := 0
 	statusCode := 200
 
 	// take user dataIndex from the statusAndCode and assign them to the above variables
-	assignData(&dataIndex, &statusCode, statusAndData, "Broadcast")
+	assignData(&dataIndex, &statusCode, statusAndData, "All")
 	// prepare the response to be sent to the client
 	res := Response{c.action, statusCode, statusAndData[dataIndex], c.ID}
 
@@ -57,7 +57,7 @@ func (c *Context) All(statusAndData ...interface{}) {
 }
 
 // SendBack sends data back to the sender
-func (c *Context) SendBack(statusAndData ...interface{}) {
+func (c *Ctx) SendBack(statusAndData ...interface{}) {
 	dataIndex := 0
 	statusCode := 200
 	assignData(&dataIndex, &statusCode, statusAndData, "SendBack")
@@ -72,7 +72,7 @@ func (c *Context) SendBack(statusAndData ...interface{}) {
 }
 
 // Send sends to only client
-func (c *Context) Send(ID string, statusAndData ...interface{}) {
+func (c *Ctx) Send(ID string, statusAndData ...interface{}) {
 	dataIndex := 0
 	statusCode := 200
 
@@ -96,7 +96,7 @@ func (c *Context) Send(ID string, statusAndData ...interface{}) {
 }
 
 // Multicast sends to the given users IDs (useful for sharing something to multiple users
-func (c *Context) Multicast(userIDs []string, statusAndData ...interface{}) {
+func (c *Ctx) Multicast(userIDs []string, statusAndData ...interface{}) {
 	dataIndex := 0
 	statusCode := 200
 
@@ -128,7 +128,7 @@ func (c *Context) Multicast(userIDs []string, statusAndData ...interface{}) {
 */
 
 // RoomAll sends to the members of the room. (useful for chat rooms.. and sending data to all people under the same role or cartegory )
-func (c *Context) RoomAll(ID string, statusAndCode ...interface{}) {
+func (c *Ctx) RoomAll(ID string, statusAndCode ...interface{}) {
 	dataIndex := 0
 	statusCode := 200
 
@@ -157,7 +157,7 @@ func (c *Context) RoomAll(ID string, statusAndCode ...interface{}) {
 }
 
 // RoomBroadcast sends to all members of the registered room except the sender
-func (c *Context) RoomBroadcast(ID string, statusAndCode ...interface{}) {
+func (c *Ctx) RoomBroadcast(ID string, statusAndCode ...interface{}) {
 	dataIndex := 0
 	statusCode := 200
 
@@ -186,7 +186,7 @@ func (c *Context) RoomBroadcast(ID string, statusAndCode ...interface{}) {
 }
 
 // CreateRoom is for creating a new room.... if it finds a room exist it only adds the given the room
-func (c *Context) CreateRoom(roomID string, usersIDS ...string) {
+func (c *Ctx) CreateRoom(roomID string, usersIDS ...string) {
 	isReg := false
 
 	// if the room is already registered
@@ -226,7 +226,7 @@ func (c *Context) CreateRoom(roomID string, usersIDS ...string) {
 	}
 
 	// if the room not found .... create a new room
-	activeUsers := []*Context{}
+	activeUsers := []*Ctx{}
 	for context := range c.hub.contexts {
 		for _, id := range usersIDS {
 			// if finds an active user
@@ -244,12 +244,12 @@ func (c *Context) CreateRoom(roomID string, usersIDS ...string) {
 }
 
 // Next pushes the next middleware in the list
-func (c *Context) Next() {
+func (c *Ctx) Next() {
 	c.goNext = true
 }
 
 // Rooms assigns this connnection to the chatrooms it relates to
-func (c *Context) Rooms(roomsIDs ...string) {
+func (c *Ctx) Rooms(roomsIDs ...string) {
 
 	// if user has rooms
 	if len(roomsIDs) > 0 {
@@ -281,7 +281,7 @@ func (c *Context) Rooms(roomsIDs ...string) {
 
 			//    if chat room is added for the first time in the hub
 			if !isReg {
-				c.hub.rooms[room] = []*Context{c}
+				c.hub.rooms[room] = []*Ctx{c}
 			}
 		}
 	}
@@ -307,7 +307,7 @@ type clientTicket struct {
 //
 // Infotext is a message to send back to the client when user authentication fails.
 // It defaults to "Please login to access this resource" if you do not provide it.
-func (c *Context) AuthTicket(infoText ...string) (ID string, ok bool) {
+func (c *Ctx) AuthTicket(infoText ...string) (ID string, ok bool) {
 	var ticketFromClient clientTicket
 
 	if len(infoText) == 0 {
@@ -359,7 +359,7 @@ func (c *Context) AuthTicket(infoText ...string) (ID string, ok bool) {
 }
 
 // Authed  tells if the connection is authenticated or not
-func (c *Context) Authed() bool {
+func (c *Ctx) Authed() bool {
 	return c.ID != ""
 }
 
@@ -372,7 +372,7 @@ func (c *Context) Authed() bool {
 
 // Fire sets which action to fire to the client. It's recommended to keep the action in path form to maintain maintain uniformity,
 // If you do not set the action to fire, the action you listened for it will be fired backward to the client too.
-func (c *Context) Fire(action string) {
+func (c *Ctx) Fire(action string) {
 	c.action = action
 }
 
@@ -384,7 +384,7 @@ func (c *Context) Fire(action string) {
 */
 
 // Binder is for extracting data from the client and storing it to the passed pointer v
-func (c *Context) Binder(v interface{}) (valid bool) {
+func (c *Ctx) Binder(v interface{}) (valid bool) {
 	if err := mapstructure.Decode(c.Data, v); err != nil {
 		log.Println("Dnet: ", err)
 		c.SendBack(422, "Unprocessable entities")
@@ -403,14 +403,14 @@ func (c *Context) Binder(v interface{}) (valid bool) {
 
 // Dispose discards the client connection without calling LastSeen for saving any lastSeen info for the clinet connection
 // Useful for expired unauthorized client connections
-func (c *Context) Dispose() {
+func (c *Ctx) Dispose() {
 	c.disposed = true
 	c.hub.unregister <- c
 	c.conn.Close()
 }
 
 // Logout calls the LastSeen function to ensure user last seen data is saved before discarding the client connection
-func (c *Context) Logout() {
+func (c *Ctx) Logout() {
 	c.loggedout = true
 	// set the last seen of the clinet connection
 	router.lastSeen(c)
@@ -427,12 +427,12 @@ func (c *Context) Logout() {
 */
 
 // Set stores value in the connection.
-func (c *Context) Set(key string, val interface{}) {
+func (c *Ctx) Set(key string, val interface{}) {
 	c.values[key] = val
 }
 
 // Get gets data stored in the connection
-func (c *Context) Get(key string) (val interface{}, err error) {
+func (c *Ctx) Get(key string) (val interface{}, err error) {
 	val, ok := c.values[key]
 	if !ok {
 		return val, fmt.Errorf("dnet: value not registered in the connection")

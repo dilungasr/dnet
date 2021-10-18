@@ -8,7 +8,7 @@ import (
 )
 
 //ActionHandler is a function wich receives Ctx
-type ActionHandler func(*Context)
+type ActionHandler func(*Ctx)
 
 // Options is used to take all the
 type Options struct {
@@ -42,7 +42,7 @@ type MainRouter struct {
 }
 
 //Route performs routing websocket actions based on the incoming action
-func (r *MainRouter) Route(IncomingAction string, context *Context) {
+func (r *MainRouter) Route(IncomingAction string, context *Ctx) {
 	if len(r.routeMatchers) > 0 {
 		for path, handlers := range r.routeMatchers {
 
@@ -111,7 +111,7 @@ func (r *MainRouter) Route(IncomingAction string, context *Context) {
 
 // LastSeen is called when the connection gets closed.
 // It's very useful for setting the last seen or apperance of the user
-func (r *MainRouter) lastSeen(c *Context) {
+func (r *MainRouter) lastSeen(c *Ctx) {
 	// check to see if there are more than context in the hub
 	contextCount := 0
 

@@ -8,43 +8,44 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// Context is a middleman between the websocket connection and the Hub
-type Context struct {
+// Ctx is a middleman between the websocket connection and the Hub.
+// Ctx is stored in the dnet hub and hence it is an inside and persistent context.
+type Ctx struct {
 	// is for main	taining connections and rooms
 	hub *Hub
-	// send is for listening data sending to the Context
+	// send listens data coming to the context from the hub
 	send chan interface{}
 	// values is for installing request values
 	values map[string]interface{}
 	//conn is a websocket connection
 	conn *websocket.Conn
 
-	// Action is the current action received from the client
+	// Action is the action to fire
 	action string
-	//ID is  a user id to assocaite it with the user connection
+	//ID is  a user id to assocaite with the user connection
 	ID string
-	// Data is where the data sent from the client stored
+	// Data stores data received from the client side
 	Data interface{}
 
-	// Rec is the id of the recipient
+	// Rec is an id of the recipient
 	Rec string
-	// next  is for telling to go to the next handler or not (in middlwares )
+	// goNext  tells whether to go to the next handler or not (in middlwares )
 	goNext bool
-	// authed is for telling if the user is authenticated or not
+	// authed tells if user is authenticated or not
 	authed bool
 	// IP is the ip address of the user
 	IP string
 
-	// disposed tells wether the clinet context has been disposed or not
+	// disposed tells wether the client context has been disposed or not
 	disposed bool
 
 	// loggedout tells wether the client context has been logged of or not
 	loggedout bool
-	// expireTime is the time the request expire if not authenticated
+	// expireTime is the time for request to expire if not authenticated yet
 	expireTime time.Time
 }
 
-// Response is the structure  for the returned data
+// Response models data sent to the client.
 type Response struct {
 	// Action is
 	Action string `json:"action"`
@@ -81,7 +82,7 @@ type Message struct {
 }
 
 // readPump for reading the message from the websocket connection
-func (c *Context) readPump() {
+func (c *Ctx) readPump() {
 	defer func() {
 		c.hub.unregister <- c
 		c.conn.Close()
@@ -99,7 +100,7 @@ func (c *Context) readPump() {
 		if err != nil {
 
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("Dnet: %v", err)
+				log.Printf("dnet: %v", err)
 
 				// call the last seeen handler to update any last seen info
 			}
@@ -126,8 +127,8 @@ func (c *Context) readPump() {
 	}
 }
 
-// writePump for writing to the Context
-func (c *Context) writePump() {
+// writePump for writing to the Ctx
+func (c *Ctx) writePump() {
 	ticker := time.NewTicker(pingPeriod)
 
 	defer func() {
@@ -152,7 +153,7 @@ func (c *Context) writePump() {
 
 			// write the ping message
 			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-				log.Printf("Dnet error: %v", err)
+				log.Printf("dnet error: %v", err)
 				return
 			}
 		}
@@ -161,7 +162,7 @@ func (c *Context) writePump() {
 }
 
 // expireContet is for removing the expired context
-func (c *Context) expireContext() {
+func (c *Ctx) expireContext() {
 	ticker := time.NewTicker(router.ticketAge)
 
 	// remove the context if expired
@@ -179,7 +180,7 @@ func Connect(w http.ResponseWriter, r *http.Request, allowedOrigin ...string) {
 
 	//hub not started monitoring
 	if !hub.hasInitialized {
-		panic("Dnet: Dnet has not been initialized. Initialized dnet by calling the dnet.Init()")
+		panic("dnet: dnet has not been initialized. Initialized dnet by calling the dnet.Init()")
 	}
 
 	// PROTECT UNAUTHORIZED ORIGINS
@@ -207,9 +208,9 @@ func Connect(w http.ResponseWriter, r *http.Request, allowedOrigin ...string) {
 		return
 	}
 
-	// create the Context...  mark user as not authenticated
+	// create the Ctx...  mark user as not authenticated
 	expireTime := time.Now().Local().Add(router.ticketAge)
-	context := &Context{hub: hub, send: make(chan interface{}, 256), conn: conn, authed: false, expireTime: expireTime, disposed: false, loggedout: false}
+	context := &Ctx{hub: hub, send: make(chan interface{}, 256), conn: conn, authed: false, expireTime: expireTime, disposed: false, loggedout: false}
 	context.hub.register <- context
 
 	go context.readPump()
