@@ -12,7 +12,7 @@ type EContext struct {
 	ID string
 }
 
-// Context creates an external context for sending data to the websocket connections from normal a http connection.
+// Context creates an external context for sending data to the websocket connections from a normal http connection.
 func Context(action string, userID ...string) EContext {
 	ID := ""
 	if len(userID) > 0 {
