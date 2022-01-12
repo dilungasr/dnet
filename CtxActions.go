@@ -56,7 +56,9 @@ func (c *Ctx) All(statusAndData ...interface{}) {
 	}
 }
 
-// SendBack sends data back to the sender
+// SendBack sends back to the sender's sending connection only.
+//
+// Use sendMe() if you want to send to all of the sender's connections including the sending connection.
 func (c *Ctx) SendBack(statusAndData ...interface{}) {
 	dataIndex := 0
 	statusCode := 200
@@ -71,7 +73,7 @@ func (c *Ctx) SendBack(statusAndData ...interface{}) {
 	}
 }
 
-// Send sends to only client
+// Send sends to one client only
 func (c *Ctx) Send(ID string, statusAndData ...interface{}) {
 	dataIndex := 0
 	statusCode := 200
@@ -85,6 +87,30 @@ func (c *Ctx) Send(ID string, statusAndData ...interface{}) {
 	// find the user to which the dataIndex should be sent to
 	for context := range c.hub.contexts {
 		if context.ID == ID {
+			select {
+			case context.send <- res:
+			default:
+				deleteContext(context)
+			}
+		}
+	}
+
+}
+
+// SendMe sends to all of the sender's open connections
+func (c *Ctx) SendMe(statusAndData ...interface{}) {
+	dataIndex := 0
+	statusCode := 200
+
+	// take user dataIndex from the statusAndCode and assign them to the above variables
+	assignData(&dataIndex, &statusCode, statusAndData, "SendMe")
+
+	//the response to be sent to the client
+	res := Response{c.action, statusCode, statusAndData[dataIndex], c.ID}
+
+	// find the user to which the dataIndex should be sent to
+	for context := range c.hub.contexts {
+		if context.ID == c.ID {
 			select {
 			case context.send <- res:
 			default:
