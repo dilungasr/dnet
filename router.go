@@ -112,7 +112,11 @@ func (r *MainRouter) Route(IncomingAction string, context *Ctx) {
 // LastSeen is called when the connection gets closed.
 // It's very useful for setting the last seen or apperance of the user
 func (r *MainRouter) lastSeen(c *Ctx) {
-	// check to see if there are more than context in the hub
+	// don't call last seen for non-authed connection
+	if !c.Authed {
+		return
+	}
+	// check to see if there are more than  1 context in the hub
 	contextCount := 0
 
 	for context := range c.hub.contexts {
