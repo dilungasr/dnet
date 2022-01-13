@@ -7,22 +7,22 @@ import (
 	"github.com/dilungasr/radi"
 )
 
-// On method is adding the Event handlers to the router
+//On method takes ActionHandlers to be called when the given action fired by the dnet-client
 func On(action string, handlers ...ActionHandler) {
 	router.actionHandlers[action] = handlers
 }
 
-// Router is for grouping the actions by matching their paths
-func Router(path string) RouterMatcher {
-	return RouterMatcher{path}
+// Router creates a subrouter for grouping related actions.
+func Router(path string) Subrouter {
+	return Subrouter{path}
 }
 
-// Use is for adding middlewares to the root of the dnet action path
+// Use adds root-level middlewares which will be called before any action is matched.
 func Use(handlers ...ActionHandler) {
 	router.routeMatchers["/"] = append(router.routeMatchers["/"], handlers...)
 }
 
-// SendTicket sends an encrypted ticket to the use and saves the clean one the router
+// SendTicket sends an encrypted ticket to the user.
 func SendTicket(r *http.Request, w http.ResponseWriter, ID string) {
 	// if the ticketSecrete and the iv set...... wer are ready to go
 	secreteKey := router.ticketSecrete
