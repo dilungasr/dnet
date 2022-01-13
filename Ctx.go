@@ -31,8 +31,8 @@ type Ctx struct {
 	Rec string
 	// goNext  tells whether to go to the next handler or not (in middlwares )
 	goNext bool
-	// authed tells if user is authenticated or not
-	authed bool
+	// Authed  tells if the connection is authenticated or not
+	Authed bool
 	// IP is the ip address of the user
 	IP string
 
@@ -106,9 +106,9 @@ func (c *Ctx) readPump() {
 			}
 
 			// logged out if authenticated,  where the client side connection has misbehaved
-			if !c.disposed && !c.loggedout && c.authed {
+			if !c.disposed && !c.loggedout && c.Authed {
 				c.Logout()
-			} else if !c.disposed && !c.loggedout && !c.authed {
+			} else if !c.disposed && !c.loggedout && !c.Authed {
 				// dispose if  not authenticated,  where the client side connection has misbehaved
 				c.Dispose()
 			}
@@ -168,7 +168,7 @@ func (c *Ctx) expireContext() {
 	// remove the context if expired
 	select {
 	case <-ticker.C:
-		if !c.authed {
+		if !c.Authed {
 			c.Dispose()
 			ticker.Stop()
 		}
@@ -210,7 +210,7 @@ func Connect(w http.ResponseWriter, r *http.Request, allowedOrigin ...string) {
 
 	// create the Ctx...  mark user as not authenticated
 	expireTime := time.Now().Local().Add(router.ticketAge)
-	context := &Ctx{hub: hub, send: make(chan interface{}, 256), conn: conn, authed: false, expireTime: expireTime, disposed: false, loggedout: false}
+	context := &Ctx{hub: hub, send: make(chan interface{}, 256), conn: conn, Authed: false, expireTime: expireTime, disposed: false, loggedout: false}
 	context.hub.register <- context
 
 	go context.readPump()

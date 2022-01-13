@@ -371,7 +371,7 @@ func (c *Ctx) AuthTicket(infoText ...string) (ID string, ok bool) {
 			} else {
 
 				c.IP = IP
-				c.authed = true
+				c.Authed = true
 				c.ID = ID
 				return ID, valid
 			}
@@ -384,9 +384,13 @@ func (c *Ctx) AuthTicket(infoText ...string) (ID string, ok bool) {
 	return "", false
 }
 
-// Authed  tells if the connection is authenticated or not
-func (c *Ctx) Authed() bool {
-	return c.ID != ""
+// MarkAuthed marks this connection as authenticated. Hence, no ticket authentication required.
+//
+// Use this when you have your own authentication mechanism or just for testing purposes.
+func (c *Ctx) MarkAuthed(ID string) {
+	c.ID = ID
+
+	c.Authed = true
 }
 
 /*
