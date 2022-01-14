@@ -144,7 +144,7 @@ func LastSeen(handler ActionHandler) {
 	router.lastSeenHandler = handler
 }
 
-// ticketCleaner is for cleaning or removing expired tickets from the router Tickets
+// ticketCleaner clean expired tickets from the router
 func (r *MainRouter) ticketCleaner() {
 	ticker := time.NewTicker(r.ticketAge)
 
@@ -173,24 +173,7 @@ func (r *MainRouter) ticketCleaner() {
 	}
 }
 
-// RouterMatcher is for grouping actions, and creating middleware subjected to the particular group
-type RouterMatcher struct {
-	// path is the path to match
-	path string
-}
-
-// On method is adding Event handlders to the router by prefixing it with the Matcher path
-func (m RouterMatcher) On(action string, handlers ...ActionHandler) {
-	router.actionHandlers[m.path+action] = handlers
-}
-
-//Use is for adding action route-wise middlewares
-func (m *RouterMatcher) Use(handlers ...ActionHandler) {
-	// append the given action handlers for matching the actioon-path beginning
-	router.routeMatchers[m.path] = append(router.routeMatchers[m.path], handlers...)
-}
-
-// router is websocket main router
+// app-wise router
 var router *MainRouter = &MainRouter{
 	actionHandlers: make(map[string][]ActionHandler), routeMatchers: make(map[string][]ActionHandler),
 	ticketSecrete: radi.RandString(32), ticketIV: radi.RandBytes(16),
