@@ -104,7 +104,7 @@ func (r *MainRouter) Route(IncomingAction string, context *Ctx) {
 
 	// if the action matched nothing ..... return the 404 code to the client
 	if !isMatch {
-		context.conn.WriteJSON(Response{IncomingAction, 404, "Action Not Found", ""})
+		context.conn.WriteJSON(response{IncomingAction, 404, "Action Not Found", ""})
 	}
 
 }
