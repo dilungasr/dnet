@@ -1,18 +1,15 @@
 package dnet
 
-// typ brings together the utilities for working with dnet types
-type typ struct{}
-
-var Type typ = typ{}
-
 // IsEContext tests the given value v if it's an external context - EContext
-func (t typ) IsEContext(v any) bool {
-	_, ok := v.(EContext)
-	return ok
+func IsEContext(v any) bool {
+	_, ok1 := v.(EContext)
+	_, ok2 := v.(*EContext)
+	return ok1 || ok2
 }
 
 // IsCtx tests the given value v if it's of Ctx type
-func (t typ) IsCtxt(v any) bool {
-	_, ok := v.(Ctx)
-	return ok
+func IsCtxt(v any) bool {
+	_, ok1 := v.(Ctx)
+	_, ok2 := v.(*Ctx)
+	return ok1 || ok2
 }
