@@ -9,7 +9,9 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-// Written by Dilunga SR
+// By Dilunga SR<dilungasr@gmail.com>
+// wwww.axismedium.com
+// twitter: @dilungasr
 
 // Broadcast sends data to all execept the sender
 func (c *Ctx) Broadcast(statusAndData ...interface{}) {
@@ -19,7 +21,7 @@ func (c *Ctx) Broadcast(statusAndData ...interface{}) {
 	// take user dataIndex from the statusAndCode and assign them to the above variables
 	assignData(&dataIndex, &statusCode, statusAndData, "Broadcast")
 	// prepare the response to be sent to the client
-	res := Response{c.action, statusCode, statusAndData[dataIndex], c.ID}
+	res := response{c.action, statusCode, statusAndData[dataIndex], c.ID}
 
 	// pass to all hub contexts to send to all other contexts
 	for context := range c.hub.contexts {
@@ -42,7 +44,7 @@ func (c *Ctx) All(statusAndData ...interface{}) {
 	// take user dataIndex from the statusAndCode and assign them to the above variables
 	assignData(&dataIndex, &statusCode, statusAndData, "All")
 	// prepare the response to be sent to the client
-	res := Response{c.action, statusCode, statusAndData[dataIndex], c.ID}
+	res := response{c.action, statusCode, statusAndData[dataIndex], c.ID}
 
 	//
 
@@ -64,7 +66,7 @@ func (c *Ctx) SendBack(statusAndData ...interface{}) {
 	statusCode := 200
 	assignData(&dataIndex, &statusCode, statusAndData, "SendBack")
 
-	res := Response{c.action, statusCode, statusAndData[dataIndex], c.ID}
+	res := response{c.action, statusCode, statusAndData[dataIndex], c.ID}
 
 	// send back to the client
 	c.conn.SetWriteDeadline(time.Now().Add(writeWait))
@@ -82,7 +84,7 @@ func (c *Ctx) Send(ID string, statusAndData ...interface{}) {
 	assignData(&dataIndex, &statusCode, statusAndData, "Send")
 
 	//the response to be sent to the client
-	res := Response{c.action, statusCode, statusAndData[dataIndex], c.ID}
+	res := response{c.action, statusCode, statusAndData[dataIndex], c.ID}
 
 	// find the user to which the dataIndex should be sent to
 	for context := range c.hub.contexts {
@@ -106,7 +108,7 @@ func (c *Ctx) SendMe(statusAndData ...interface{}) {
 	assignData(&dataIndex, &statusCode, statusAndData, "SendMe")
 
 	//the response to be sent to the client
-	res := Response{c.action, statusCode, statusAndData[dataIndex], c.ID}
+	res := response{c.action, statusCode, statusAndData[dataIndex], c.ID}
 
 	// find the user to which the dataIndex should be sent to
 	for context := range c.hub.contexts {
@@ -130,7 +132,7 @@ func (c *Ctx) Multicast(userIDs []string, statusAndData ...interface{}) {
 	assignData(&dataIndex, &statusCode, statusAndData, "Send")
 
 	//the response to be sent to the client
-	res := Response{c.action, statusCode, statusAndData[dataIndex], c.ID}
+	res := response{c.action, statusCode, statusAndData[dataIndex], c.ID}
 
 	for _, userID := range userIDs {
 		// find the matching context
@@ -162,7 +164,7 @@ func (c *Ctx) RoomAll(ID string, statusAndCode ...interface{}) {
 	assignData(&dataIndex, &statusCode, statusAndCode, "Send")
 
 	//the response to be sent to the client
-	res := Response{c.action, statusCode, statusAndCode[dataIndex], c.ID}
+	res := response{c.action, statusCode, statusAndCode[dataIndex], c.ID}
 
 	//    find the room and broadcast to all the room members
 	for roomID, contexts := range c.hub.rooms {
@@ -191,7 +193,7 @@ func (c *Ctx) RoomBroadcast(ID string, statusAndCode ...interface{}) {
 	assignData(&dataIndex, &statusCode, statusAndCode, "Send")
 
 	//the response to be sent to the client
-	res := Response{c.action, statusCode, statusAndCode[dataIndex], c.ID}
+	res := response{c.action, statusCode, statusAndCode[dataIndex], c.ID}
 
 	//    find the room and broadcast to all the room members
 	for roomID, contexts := range c.hub.rooms {
@@ -477,5 +479,3 @@ func (c *Ctx) Get(key string) (val interface{}, err error) {
   |  WORKING WITH EMAILS   |
   ----------------------------------------------------------
 */
-
-// By Dilunga SR

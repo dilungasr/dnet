@@ -8,6 +8,10 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// By Dilunga SR<dilungasr@gmail.com>
+// wwww.axismedium.com
+// twitter: @dilungasr
+
 // Ctx is a middleman between the websocket connection and the Hub.
 // Ctx is stored in the dnet hub and hence it is an inside and persistent context.
 type Ctx struct {
@@ -45,8 +49,8 @@ type Ctx struct {
 	expireTime time.Time
 }
 
-// Response models data sent to the client.
-type Response struct {
+// response models data sent to the client.
+type response struct {
 	// Action is
 	Action string `json:"action"`
 	//the status  code to be returned to the client
