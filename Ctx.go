@@ -72,8 +72,8 @@ var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 }
 
-// Message is a data sent from the client
-type Message struct {
+// message is a data sent from the client
+type message struct {
 	Action string `json:"action"`
 	// Rec is the id of the recipient
 	Rec string `json:"rec"`
@@ -95,7 +95,7 @@ func (c *Ctx) readPump() {
 
 	// here we go ..... reading
 	for {
-		var msg Message
+		var msg message
 		err := c.conn.ReadJSON(&msg)
 		if err != nil {
 
@@ -161,11 +161,10 @@ func (c *Ctx) writePump() {
 	}
 }
 
-// expireContet is for removing the expired context
+// expireContext disposes the expired context
 func (c *Ctx) expireContext() {
 	ticker := time.NewTicker(router.ticketAge)
 
-	// remove the context if expired
 	select {
 	case <-ticker.C:
 		if !c.Authed {
