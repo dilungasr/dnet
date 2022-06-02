@@ -50,3 +50,34 @@ func SendTicket(r *http.Request, w http.ResponseWriter, ID string) {
 	jsonSender(w, 200, Map{"ticket": ticket.CipherText})
 
 }
+
+// ticketParts splits the ticket string to get the indiviadial elements
+func ticketParts(ticketString string, c ...*Ctx) (ID, UUID, IP string, expireTime time.Time, ok bool) {
+	ticketPartsSlice := strings.Split(ticketString, ",")
+
+	// if it is a false ticket with less or more number of elements of slice
+	if len(ticketPartsSlice) != 4 {
+		if len(c) > 0 {
+			ctx := c[0]
+			ctx.conn.SetWriteDeadline(time.Now().Local().Add(writeWait))
+			ctx.SendBack(400, "Bad Request")
+		}
+		return ID, UUID, IP, expireTime, false
+	}
+
+	//    organize and parse time for returning to the caller
+	ID = ticketPartsSlice[0]
+	UUID = ticketPartsSlice[1]
+	IP = ticketPartsSlice[2]
+	expireTime, err := time.Parse(time.RFC3339, ticketPartsSlice[3])
+	if err != nil {
+		if len(c) > 0 {
+			ctx := c[0]
+			ctx.conn.SetWriteDeadline(time.Now().Local().Add(writeWait))
+			ctx.SendBack(400, "Ooop! Bad Request")
+		}
+		return ID, UUID, IP, expireTime, false
+	}
+
+	return ID, UUID, IP, expireTime, ok
+}
