@@ -15,13 +15,7 @@ import (
 
 // Broadcast sends data to all execept the sender
 func (c *Ctx) Broadcast(statusAndData ...interface{}) {
-	dataIndex := 0
-	statusCode := 200
-
-	// take user dataIndex from the statusAndCode and assign them to the above variables
-	assignData(&dataIndex, &statusCode, statusAndData, "Broadcast")
-	// prepare the response to be sent to the client
-	res := response{c.action, statusCode, statusAndData[dataIndex], c.ID}
+	res := prepareRes(c, "Broadcast", statusAndData)
 
 	// pass to all hub contexts to send to all other contexts
 	for context := range c.hub.contexts {
@@ -38,16 +32,7 @@ func (c *Ctx) Broadcast(statusAndData ...interface{}) {
 
 // All sends to anyone connected to the websocket Dnet instance including the sender of the message
 func (c *Ctx) All(statusAndData ...interface{}) {
-	dataIndex := 0
-	statusCode := 200
-
-	// take user dataIndex from the statusAndCode and assign them to the above variables
-	assignData(&dataIndex, &statusCode, statusAndData, "All")
-	// prepare the response to be sent to the client
-	res := response{c.action, statusCode, statusAndData[dataIndex], c.ID}
-
-	//
-
+	res := prepareRes(c, "All", statusAndData)
 	// pass to all hub contexts to send to all other contexts
 	for context := range c.hub.contexts {
 		select {
@@ -62,11 +47,7 @@ func (c *Ctx) All(statusAndData ...interface{}) {
 //
 // Use sendMe() if you want to send to all of the sender's connections including the sending connection.
 func (c *Ctx) SendBack(statusAndData ...interface{}) {
-	dataIndex := 0
-	statusCode := 200
-	assignData(&dataIndex, &statusCode, statusAndData, "SendBack")
-
-	res := response{c.action, statusCode, statusAndData[dataIndex], c.ID}
+	res := prepareRes(c, "SendBack", statusAndData)
 
 	// send back to the client
 	c.conn.SetWriteDeadline(time.Now().Add(writeWait))
@@ -77,14 +58,7 @@ func (c *Ctx) SendBack(statusAndData ...interface{}) {
 
 // Send sends to one client only
 func (c *Ctx) Send(ID string, statusAndData ...interface{}) {
-	dataIndex := 0
-	statusCode := 200
-
-	// take user dataIndex from the statusAndCode and assign them to the above variables
-	assignData(&dataIndex, &statusCode, statusAndData, "Send")
-
-	//the response to be sent to the client
-	res := response{c.action, statusCode, statusAndData[dataIndex], c.ID}
+	res := prepareRes(c, "Send", statusAndData)
 
 	// find the user to which the dataIndex should be sent to
 	for context := range c.hub.contexts {
@@ -101,14 +75,7 @@ func (c *Ctx) Send(ID string, statusAndData ...interface{}) {
 
 // SendMe sends to all of the sender's open connections
 func (c *Ctx) SendMe(statusAndData ...interface{}) {
-	dataIndex := 0
-	statusCode := 200
-
-	// take user dataIndex from the statusAndCode and assign them to the above variables
-	assignData(&dataIndex, &statusCode, statusAndData, "SendMe")
-
-	//the response to be sent to the client
-	res := response{c.action, statusCode, statusAndData[dataIndex], c.ID}
+	res := prepareRes(c, "SendMe", statusAndData)
 
 	// find the user to which the dataIndex should be sent to
 	for context := range c.hub.contexts {
@@ -125,14 +92,7 @@ func (c *Ctx) SendMe(statusAndData ...interface{}) {
 
 // Multicast sends to the given users IDs (useful for sharing something to multiple users
 func (c *Ctx) Multicast(userIDs []string, statusAndData ...interface{}) {
-	dataIndex := 0
-	statusCode := 200
-
-	// take user dataIndex from the statusAndCode and assign them to the above variables
-	assignData(&dataIndex, &statusCode, statusAndData, "Send")
-
-	//the response to be sent to the client
-	res := response{c.action, statusCode, statusAndData[dataIndex], c.ID}
+	res := prepareRes(c, "Multicast", statusAndData)
 
 	for _, userID := range userIDs {
 		// find the matching context
@@ -156,15 +116,8 @@ func (c *Ctx) Multicast(userIDs []string, statusAndData ...interface{}) {
 */
 
 // RoomAll sends to the members of the room. (useful for chat rooms.. and sending data to all people under the same role or cartegory )
-func (c *Ctx) RoomAll(ID string, statusAndCode ...interface{}) {
-	dataIndex := 0
-	statusCode := 200
-
-	// take user dataIndex from the statusAndCode and assign them to the above variables
-	assignData(&dataIndex, &statusCode, statusAndCode, "Send")
-
-	//the response to be sent to the client
-	res := response{c.action, statusCode, statusAndCode[dataIndex], c.ID}
+func (c *Ctx) RoomAll(ID string, statusAndData ...interface{}) {
+	res := prepareRes(c, "RoomAll", statusAndData)
 
 	//    find the room and broadcast to all the room members
 	for roomID, contexts := range c.hub.rooms {
@@ -185,15 +138,8 @@ func (c *Ctx) RoomAll(ID string, statusAndCode ...interface{}) {
 }
 
 // RoomBroadcast sends to all members of the registered room except the sender
-func (c *Ctx) RoomBroadcast(ID string, statusAndCode ...interface{}) {
-	dataIndex := 0
-	statusCode := 200
-
-	// take user dataIndex from the statusAndCode and assign them to the above variables
-	assignData(&dataIndex, &statusCode, statusAndCode, "Send")
-
-	//the response to be sent to the client
-	res := response{c.action, statusCode, statusAndCode[dataIndex], c.ID}
+func (c *Ctx) RoomBroadcast(ID string, statusAndData ...interface{}) {
+	res := prepareRes(c, "Send", statusAndData)
 
 	//    find the room and broadcast to all the room members
 	for roomID, contexts := range c.hub.rooms {

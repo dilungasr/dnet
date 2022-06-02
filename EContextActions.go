@@ -4,13 +4,7 @@ package dnet
 
 // Broadcast sends data to alll dnet contexts in the hub
 func (c *EContext) Broadcast(statusAndData ...interface{}) {
-	dataIndex := 0
-	statusCode := 200
-
-	// take user dataIndex from the statusAndCode and assign them to the above variables
-	assignData(&dataIndex, &statusCode, statusAndData, "Broadcast")
-	// prepare the response to be sent to the client
-	res := Response{c.action, statusCode, statusAndData[dataIndex], c.ID}
+	res := prepareRes(c, "Broadcast", statusAndData)
 
 	// pass to all hub contexts to send to all other contexts
 	for context := range c.hub.contexts {
@@ -26,14 +20,7 @@ func (c *EContext) Broadcast(statusAndData ...interface{}) {
 
 // Send sends to only one client of the specified ID
 func (c *EContext) Send(ID string, statusAndData ...interface{}) {
-	dataIndex := 0
-	statusCode := 200
-
-	// take user dataIndex from the statusAndCode and assign them to the above variables
-	assignData(&dataIndex, &statusCode, statusAndData, "Send")
-
-	//the response to be sent to the client
-	res := Response{c.action, statusCode, statusAndData[dataIndex], c.ID}
+	res := prepareRes(c, "Send", statusAndData)
 
 	// find the user to which the dataIndex should be sent to
 	for context := range c.hub.contexts {
@@ -50,14 +37,7 @@ func (c *EContext) Send(ID string, statusAndData ...interface{}) {
 
 // Multicast sends to the given users IDs (useful for sharing something to multiple users
 func (c *EContext) Multicast(userIDs []string, statusAndData ...interface{}) {
-	dataIndex := 0
-	statusCode := 200
-
-	// take user dataIndex from the statusAndCode and assign them to the above variables
-	assignData(&dataIndex, &statusCode, statusAndData, "Send")
-
-	//the response to be sent to the client
-	res := Response{c.action, statusCode, statusAndData[dataIndex], c.ID}
+	res := prepareRes(c, "Multicast", statusAndData)
 
 	for _, userID := range userIDs {
 		// find the matching context

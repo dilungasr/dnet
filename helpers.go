@@ -72,3 +72,36 @@ func NewLink(userID, linkID string, minutes ...time.Duration) (link string, err 
 
 	return radi.Encrypt(userID+","+linkID+","+expireTimeString, router.ticketSecrete, router.ticketIV), nil
 }
+
+//contexts groups external context and  inner context as type contrains for contexts
+type contexts interface {
+	*EContext | *Ctx
+}
+
+// prepareRes prepares to send to the clients
+func prepareRes[T contexts](c T, funcName string, statusAndData []interface{}) response {
+	dataIndex := 0
+	statusCode := 200
+
+	// take user dataIndex from the statusAndCode and assign them to the above variables
+	assignData(&dataIndex, &statusCode, statusAndData, funcName)
+
+	action, ctxID := "", ""
+
+	// test if it's an external context
+	ectx, ok := any(c).(*EContext)
+	if ok {
+		action = ectx.action
+		ctxID = ectx.ID
+	} else {
+		//  test if it's an inner context
+		ctx, ok := any(c).(*Ctx)
+		if ok {
+			action = ctx.action
+			ctxID = ctx.ID
+		}
+	}
+
+	// return the prepared response
+	return response{action, statusCode, statusAndData[dataIndex], ctxID}
+}
