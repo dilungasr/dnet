@@ -28,7 +28,7 @@ type MainRouter struct {
 	// tells wether use set the last seen or not
 	isLastSeenHandlerSet bool
 	// tickets is the store place of all tickets given to the user before they expire
-	tickets []string
+	tickets []routerTicket
 	// ticketKey is the key for cryptography of the ticket
 	ticketIV []byte
 
