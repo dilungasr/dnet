@@ -161,16 +161,12 @@ func (c *Ctx) writePump() {
 	}
 }
 
-// expireContext disposes the expired context
+// expireContext disposes this context when tickage age reaches without being authenticated
 func (c *Ctx) expireContext() {
-	ticker := time.NewTicker(router.ticketAge)
+	<-time.After(router.ticketAge)
 
-	select {
-	case <-ticker.C:
-		if !c.Authed {
-			c.Dispose()
-			ticker.Stop()
-		}
+	if !c.Authed {
+		c.Dispose()
 	}
 }
 
