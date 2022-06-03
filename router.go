@@ -156,7 +156,6 @@ func (r *MainRouter) ticketCleaner() {
 				router.removeTicket(ticket.UUID, ticket.CipherText)
 			}
 		}
-
 	}
 
 }

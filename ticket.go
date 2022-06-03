@@ -120,7 +120,7 @@ func authenticateTicket(c *Ctx, encryptedTicketString string) (userID string, va
 	}
 
 	ticket, found := router.findTicket(clientUUID, encryptedTicketString)
-	if found {
+	if !found {
 		return userID, false
 	}
 
@@ -133,7 +133,6 @@ func authenticateTicket(c *Ctx, encryptedTicketString string) (userID string, va
 
 	//remove the ticket
 	router.removeTicket(ticket.UUID, ticket.CipherText)
-
 	// mark authed
 	c.ID = userID
 	c.IP = IP

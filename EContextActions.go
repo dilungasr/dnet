@@ -55,7 +55,7 @@ func (c *EContext) Multicast(userIDs []string, statusAndData ...interface{}) {
 
 /*
    -----------------------------------------------
-    FIRE METHODS GOE HERE
+    FIRE METHODS GOES HERE
    -----------------------------------------------
 
 */
