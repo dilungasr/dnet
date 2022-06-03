@@ -14,6 +14,7 @@ import (
 type routerTicket struct {
 	UUID       string
 	CipherText string
+	ExpireTime time.Time
 }
 
 // newRouterTicket creates an instance of routerTicket struct
@@ -23,14 +24,17 @@ func newRouterTicket(r *http.Request, ID string) (ticket routerTicket, err error
 
 	// create cipher text
 	IP, err := GetIP(r)
-	expireTimeBytes, err := time.Now().Add(router.ticketAge).MarshalText()
+
+	t := time.Now().Add(router.ticketAge)
+	expireTimeBytes, err := t.MarshalText()
 	expireTimeString := string(expireTimeBytes)
+
 	ticketString := strings.Join([]string{ID, UUID.String(), IP, expireTimeString}, ",")
 
 	cipherText := radi.Encrypt(ticketString, router.ticketSecrete, router.ticketIV)
 
 	//   save the router ticket in the router
-	ticket = routerTicket{UUIDString, cipherText}
+	ticket = routerTicket{UUIDString, cipherText, t}
 	router.tickets = append(router.tickets, ticket)
 
 	return ticket, err

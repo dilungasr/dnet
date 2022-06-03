@@ -5,7 +5,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/dilungasr/radi"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -292,38 +291,10 @@ func (c *Ctx) AuthTicket(infoText ...string) (ID string, ok bool) {
 		return
 	}
 
-	//get the ticket string from the client to plain text
-	ticketString, valid := radi.Decrypt(ticketFromClient.Ticket, router.ticketSecrete, router.ticketIV)
-	// if the ticketString is not avalid base64 string
-	if !valid {
-		c.SendBack(400, "Bad Request")
-		return ID, false
-	}
-
-	for i, ticket := range router.tickets {
-		if ticketString == ticket {
-			ID, IP, expireTimeString, ok := ticketParts(ticket, c)
-			if !ok {
-				return ID, false
-			}
-			//  compare the expireTime and this time to see if the ticket expired or not
-			expireTime, err := time.Parse(time.RFC3339, expireTimeString)
-			if err != nil {
-				panic(err)
-			}
-
-			// if the ticket expired
-			if time.Now().Local().After(expireTime) {
-				//  delete the ticket
-				router.tickets = append(router.tickets[:i], router.tickets[i+1:]...)
-			} else {
-
-				c.IP = IP
-				c.Authed = true
-				c.ID = ID
-				return ID, valid
-			}
-		}
+	// auth user ticket
+	ID, ok = authenticateTicket(c, ticketFromClient.Ticket)
+	if ok {
+		return ID, ok
 	}
 
 	// if not valid ... close the connection

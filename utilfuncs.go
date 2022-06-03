@@ -3,8 +3,6 @@ package dnet
 import (
 	"encoding/json"
 	"net/http"
-	"strings"
-	"time"
 
 	"github.com/dilungasr/tanzanite/types"
 )
@@ -56,22 +54,6 @@ func assignData(dataIndex, statusCode *int, statusAndCode []interface{}, funcNam
 	case len(statusAndCode) > 2:
 		panic("Too many " + funcName + "() arguments.")
 	}
-}
-
-// ticketParts splits the ticket string to get the indiviadial elements
-func ticketParts(ticketString string, c ...*Ctx) (ID, IP, expireTime string, ok bool) {
-	ticketPartsSlice := strings.Split(ticketString, ",")
-
-	// if it is a false ticket with less or more number of elements of slice
-	if len(c) > 0 {
-		if len(ticketPartsSlice) != 3 {
-			c[0].conn.SetWriteDeadline(time.Now().Local().Add(writeWait))
-			c[0].SendBack(400, "Bad Request")
-			return ID, IP, expireTime, false
-		}
-	}
-
-	return ticketPartsSlice[0], ticketPartsSlice[1], ticketPartsSlice[2], true
 }
 
 // jsonSender json internally using the http.ResponseWriter

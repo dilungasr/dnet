@@ -169,7 +169,7 @@ func (r *MainRouter) ticketCleaner() {
 func (router MainRouter) findTicket(UUID, cipherText string) (foundTicket routerTicket, found bool) {
 	tickets := router.tickets
 
-	for i, ticket := range tickets {
+	for _, ticket := range tickets {
 		if ticket.UUID == UUID && ticket.CipherText == cipherText {
 			return ticket, true
 		}
