@@ -170,6 +170,52 @@ func (r *MainRouter) ticketCleaner() {
 
 }
 
+// TICKET'S ROUTER METHODS
+
+// findTicket queries a ticket store for the ticket and returns it if found
+//
+// found - tells whehter the query found any match or not
+func (router MainRouter) findTicket(UUID, cipherText string) (foundTicket routerTicket, found bool) {
+	tickets := router.tickets
+
+	for i, ticket := range tickets {
+		if ticket.UUID == UUID && ticket.CipherText == cipherText {
+			return i, ticket, true
+		}
+	}
+
+	return index, foundTicket, false
+}
+
+// findTicketIndex queries a ticket store for the ticket and returns it's index and tells  it if found or not
+//
+// found - tells whehter the query found any match or not
+func (router MainRouter) findTicketIndex(UUID, cipherText string) (index int, found bool) {
+	tickets := router.tickets
+
+	for i, ticket := range tickets {
+		if ticket.UUID == UUID && ticket.CipherText == cipherText {
+			return i, true
+		}
+	}
+
+	return index, false
+}
+
+// removeTicket removes the ticket with the given uuid and cipher text from the store.
+//It does not retain the order of the tickets
+func (router *MainRouter) removeTicket(UUID, cipherText string) {
+	// find the ticket index
+	index, found := router.findTicketIndex(UUID, cipherText)
+	if found {
+		//remove the element at the index
+		tickets := router.tickets
+		tickets[index] = tickets[len(tickets)-1]
+		router.tickets = tickets[:len(tickets)-1]
+	}
+
+}
+
 // app-wise router
 var router *MainRouter = &MainRouter{
 	actionHandlers: make(map[string][]ActionHandler), routeMatchers: make(map[string][]ActionHandler),
