@@ -1,17 +1,19 @@
 package dnet
 
+type DnetContext interface {
+	*Ctx | *EContext
+}
+
 // IsEContext tests the given value v if it's an external context - EContext
 func IsEContext(v any) bool {
-	_, ok1 := v.(EContext)
-	_, ok2 := v.(*EContext)
-	return ok1 || ok2
+	_, ok := v.(*EContext)
+	return ok
 }
 
 // IsCtx tests the given value v if it's of Ctx type
 func IsCtxt(v any) bool {
-	_, ok1 := v.(Ctx)
-	_, ok2 := v.(*Ctx)
-	return ok1 || ok2
+	_, ok := v.(*Ctx)
+	return ok
 }
 
 // IsDnetContext tests the given  value v if it's  a dnet context i.e dnet.EContext or dnet.Ctx
