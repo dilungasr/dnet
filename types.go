@@ -13,3 +13,8 @@ func IsCtxt(v any) bool {
 	_, ok2 := v.(*Ctx)
 	return ok1 || ok2
 }
+
+// IsDnetContext tests the given  value v if it's  a dnet context i.e dnet.EContext or dnet.Ctx
+func IsDnetContext(v any) bool {
+	return IsCtxt(v) || IsEContext(v)
+}
