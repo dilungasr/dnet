@@ -20,10 +20,16 @@ type routerTicket struct {
 // newRouterTicket creates an instance of routerTicket struct
 func newRouterTicket(r *http.Request, ID string) (ticket routerTicket, err error) {
 	UUID, err := uuid.NewRandom()
+	if err != nil {
+		return ticket, err
+	}
 	UUIDString := UUID.String()
 
 	// create cipher text
 	IP, err := GetIP(r)
+	if err != nil {
+		return ticket, err
+	}
 
 	t := time.Now().Add(router.ticketAge)
 	expireTimeBytes, err := t.MarshalText()
