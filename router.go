@@ -149,23 +149,14 @@ func (r *MainRouter) ticketCleaner() {
 	ticker := time.NewTicker(r.ticketAge)
 
 	for range ticker.C {
-		// enter in the tickets and remove the expired tickets
-		activeTickets := []string{}
-		for i, ticket := range r.tickets {
-			_, _, expireTimeString, _ := ticketParts(ticket)
-			expireTime, err := time.Parse(time.RFC3339, expireTimeString)
-			if err != nil {
-				panic(err)
-			}
 
-			//extract unexpired tickets only
-			if time.Now().Local().Before(expireTime) {
-				activeTickets = append(activeTickets, r.tickets[i])
+		for _, ticket := range r.tickets {
+			// remove if expired
+			if hasExpired(ticket.ExpireTime) {
+				router.removeTicket(ticket.UUID, ticket.CipherText)
 			}
 		}
 
-		//  assign all non-expired tickets as new router tickets
-		r.tickets = activeTickets
 	}
 
 }
