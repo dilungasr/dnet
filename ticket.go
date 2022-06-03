@@ -36,6 +36,11 @@ func newRouterTicket(r *http.Request, ID string) (ticket routerTicket, err error
 	return ticket, err
 }
 
+// hasExpired tells whether the given ticket time has expired or not
+func hasExpired(t time.Time) bool {
+	return time.Now().Local().After(t)
+}
+
 // SendTicket sends an encrypted ticket to the user.
 func SendTicket(r *http.Request, w http.ResponseWriter, ID string) {
 	// create a new ticket
@@ -62,6 +67,9 @@ func ticketParts(ticketString string, c ...*Ctx) (ID, UUID, IP string, expireTim
 			ctx.conn.SetWriteDeadline(time.Now().Local().Add(writeWait))
 			ctx.SendBack(400, "Bad Request")
 		}
+
+		//output error to the console
+		log.Println("dnet: ticket string has unusual number of parts. It's invalid")
 		return ID, UUID, IP, expireTime, false
 	}
 
@@ -76,8 +84,51 @@ func ticketParts(ticketString string, c ...*Ctx) (ID, UUID, IP string, expireTim
 			ctx.conn.SetWriteDeadline(time.Now().Local().Add(writeWait))
 			ctx.SendBack(400, "Ooop! Bad Request")
 		}
+
+		// log the error to the console
+		log.Println("dnet: ", err)
 		return ID, UUID, IP, expireTime, false
 	}
 
-	return ID, UUID, IP, expireTime, ok
+	return ID, UUID, IP, expireTime, true
+}
+
+// authenticateTicket authenticates the given encrypted ticket link from the client and returns userID and valid boolean
+func authenticateTicket(c *Ctx, encryptedTicketString string) (userID string, valid bool) {
+	//get the ticket string from the client to plain text
+	ticketString, valid := radi.Decrypt(encryptedTicketString, router.ticketSecrete, router.ticketIV)
+	// if the ticketString is not avalid base64 string
+	if !valid {
+		c.SendBack(400, "Bad Request")
+		return userID, valid
+	}
+
+	// split the ticket string to individal parts
+	userID, clientUUID, IP, expireTime, ok := ticketParts(ticketString)
+	if !ok {
+		return userID, false
+	}
+
+	ticket, found := router.findTicket(clientUUID, encryptedTicketString)
+	if found {
+		return userID, false
+	}
+
+	//  check if not expired
+	if hasExpired(expireTime) {
+		//  remove the ticket
+		router.removeTicket(ticket.UUID, ticket.CipherText)
+		return userID, false
+	}
+
+	//remove the ticket
+	router.removeTicket(ticket.UUID, ticket.CipherText)
+
+	// mark authed
+	c.ID = userID
+	c.IP = IP
+	c.Authed = true
+
+	// return success to the caller
+	return userID, true
 }
