@@ -180,11 +180,11 @@ func (router MainRouter) findTicket(UUID, cipherText string) (foundTicket router
 
 	for i, ticket := range tickets {
 		if ticket.UUID == UUID && ticket.CipherText == cipherText {
-			return i, ticket, true
+			return ticket, true
 		}
 	}
 
-	return index, foundTicket, false
+	return foundTicket, false
 }
 
 // findTicketIndex queries a ticket store for the ticket and returns it's index and tells  it if found or not
