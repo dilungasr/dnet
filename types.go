@@ -18,3 +18,19 @@ func IsCtxt(v any) bool {
 func IsDnetContext(v any) bool {
 	return IsCtxt(v) || IsEContext(v)
 }
+
+// ToCtx convets the given value v to *dnet.Ctx.
+//
+// ok is returned when the assertion succeed
+func ToCtx(v any) (ctx *Ctx, ok bool) {
+	ctx, ok = v.(*Ctx)
+	return ctx, ok
+}
+
+// ToEContext convets the given value v to *dnet.EContext.
+//
+// ok is returned when the assertion succeed
+func ToEContext(v any) (ctx *EContext, ok bool) {
+	ctx, ok = v.(*EContext)
+	return ctx, ok
+}
