@@ -396,6 +396,12 @@ func (c *Ctx) Del(key string) {
 	delete(c.values, key)
 }
 
+// Clear empties context values. That is, deletes every value in the context values
+// and resets the value store anew.
+func (c *Ctx) Clear(key string) {
+	c.values = map[string]interface{}{}
+}
+
 /*
   -----------------------------------------------------------
   |  WORKING WITH EMAILS   |
