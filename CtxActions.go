@@ -384,7 +384,7 @@ func (c *Ctx) Set(key string, val interface{}) {
 func (c *Ctx) Get(key string) (val interface{}, err error) {
 	val, ok := c.values[key]
 	if !ok {
-		return val, fmt.Errorf("dnet: value not registered in the connection")
+		return val, fmt.Errorf("dnet: " + "'" + key + "'" + " field is not registered in the context")
 	}
 
 	return val, nil
