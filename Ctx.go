@@ -121,7 +121,9 @@ func (c *Ctx) readPump() {
 		}
 
 		// initialize and pour out the value from the dnet message to the context to make it available in the api context
-		c.values = make(map[string]interface{})
+		if c.values == nil {
+			c.values = make(map[string]interface{})
+		}
 		c.action = msg.Action
 		c.Data = msg.Data
 		c.Rec = msg.Rec
