@@ -391,6 +391,11 @@ func (c *Ctx) Get(key string) (val interface{}, err error) {
 
 }
 
+// Del deletes context value's field with a given key
+func (c *Ctx) Del(key string) {
+	delete(c.values, key)
+}
+
 /*
   -----------------------------------------------------------
   |  WORKING WITH EMAILS   |
