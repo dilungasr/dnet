@@ -3,11 +3,12 @@ package dnet
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/dilungasr/tanzanite/types"
 )
 
-//deleteContext is for deleting the context from the hub
+// deleteContext is for deleting the context from the hub
 func deleteContext(c *Ctx) {
 	if _, ok := c.hub.contexts[c]; ok {
 		delete(c.hub.contexts, c)
@@ -37,7 +38,7 @@ func deleteContext(c *Ctx) {
 	}
 }
 
-//assignData is for extracting data and statusCode from the action handler and assign them to the data and statusCode respectively
+// assignData is for extracting data and statusCode from the action handler and assign them to the data and statusCode respectively
 func assignData(dataIndex, statusCode *int, statusAndCode []interface{}, funcName string) {
 	switch {
 	case len(statusAndCode) == 2:
@@ -65,4 +66,9 @@ func jsonSender(w http.ResponseWriter, statusCode int, data interface{}) {
 
 	// Send the json
 	json.NewEncoder(w).Encode(data)
+}
+
+// resetWriteDeadline does what it says
+func resetWriteDeadline(c *Ctx) {
+	c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 }
