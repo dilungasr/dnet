@@ -7,7 +7,7 @@ import (
 	"github.com/dilungasr/radi"
 )
 
-//ActionHandler is a function wich receives Ctx
+// ActionHandler is a function wich receives Ctx
 type ActionHandler func(*Ctx)
 
 // Options is used to take all the
@@ -41,7 +41,7 @@ type MainRouter struct {
 	ticketAge time.Duration
 }
 
-//Route performs routing websocket actions based on the incoming action
+// Route performs routing websocket actions based on the incoming action
 func (r *MainRouter) Route(IncomingAction string, context *Ctx) {
 	if len(r.routeMatchers) > 0 {
 		for path, handlers := range r.routeMatchers {
@@ -104,6 +104,7 @@ func (r *MainRouter) Route(IncomingAction string, context *Ctx) {
 
 	// if the action matched nothing ..... return the 404 code to the client
 	if !isMatch {
+		resetWriteDeadline(context)
 		context.conn.WriteJSON(response{IncomingAction, 404, "Action Not Found", ""})
 	}
 
@@ -193,7 +194,7 @@ func (router MainRouter) findTicketIndex(UUID, cipherText string) (index int, fo
 }
 
 // removeTicket removes the ticket with the given uuid and cipher text from the store.
-//It does not retain the order of the tickets
+// It does not retain the order of the tickets
 func (router *MainRouter) removeTicket(UUID, cipherText string) {
 	// find the ticket index
 	index, found := router.findTicketIndex(UUID, cipherText)

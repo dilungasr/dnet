@@ -145,7 +145,7 @@ func (c *Ctx) writePump() {
 	for {
 		select {
 		case message, ok := <-c.send:
-			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
+			resetWriteDeadline(c)
 
 			if !ok {
 				c.conn.WriteMessage(websocket.CloseMessage, []byte{})
@@ -155,7 +155,7 @@ func (c *Ctx) writePump() {
 			c.conn.WriteJSON(message)
 
 		case <-ticker.C:
-			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
+			resetWriteDeadline(c)
 
 			// write the ping message
 			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
