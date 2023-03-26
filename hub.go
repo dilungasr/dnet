@@ -28,7 +28,7 @@ var hub *Hub = &Hub{
 func Init(options ...Options) {
 	// makesure that Init is called only once
 	if hub.hasInitialized {
-		panic("dnet: Dnet cannot be initialized more than once")
+		panic("[dnet] don't call init more once in your program")
 	}
 
 	//  update Router options if user gave any
@@ -46,7 +46,7 @@ func Init(options ...Options) {
 
 	//mark that Init has been called to prevent future repeated calling of this function
 	hub.hasInitialized = true
-	fmt.Println("Dnet initialized...")
+	fmt.Println("[dnet] initialized...")
 	go hub.Run()
 	go router.ticketCleaner()
 }
