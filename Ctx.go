@@ -26,6 +26,9 @@ type Ctx struct {
 
 	// Action is the action to fire
 	action string
+
+	//original action stays the same as it was fired by the client
+	originalAction string
 	//ID of the user owning the connection
 	ID string
 
@@ -52,6 +55,9 @@ type Ctx struct {
 
 func (c Ctx) getAction() string {
 	return c.action
+}
+func (c Ctx) getOriginalAction() string {
+	return c.originalAction
 }
 
 func (c Ctx) getID() string {
@@ -122,6 +128,7 @@ func (c *Ctx) readPump() {
 			c.values = make(map[string]interface{})
 		}
 		c.action = msg.Action
+		c.originalAction = msg.Action
 		c.data = msg.Data
 		c.Rec = msg.Rec
 
