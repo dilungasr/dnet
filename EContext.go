@@ -8,12 +8,17 @@ type EContext struct {
 	hub *Hub
 	// Action is the current action received from the client
 	action string
+	//original action stays the same as it was passed in the Context()
+	originalAction string
 	//ID is  a user id to assocaite it with the user connection
 	ID string
 }
 
 func (ec EContext) getAction() string {
 	return ec.action
+}
+func (ec EContext) getOriginalAction() string {
+	return ec.originalAction
 }
 
 func (ec EContext) getID() string {
@@ -27,5 +32,10 @@ func Context(action string, userID ...string) EContext {
 		ID = userID[0]
 	}
 
-	return EContext{hub, action, ID}
+	return EContext{
+		hub:            hub,
+		action:         action,
+		originalAction: action,
+		ID:             ID,
+	}
 }
