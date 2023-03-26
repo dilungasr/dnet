@@ -97,7 +97,7 @@ func (r *MainRouter) Route(IncomingAction string, context *Ctx) {
 
 			} else {
 				// if no handler by the user
-				panic("Dnet: No action handler passed")
+				panic("[dnet] No action handler passed")
 			}
 		}
 	}
@@ -105,7 +105,7 @@ func (r *MainRouter) Route(IncomingAction string, context *Ctx) {
 	// if the action matched nothing ..... return the 404 code to the client
 	if !isMatch {
 		resetWriteDeadline(context)
-		context.conn.WriteJSON(response{IncomingAction, 404, "Sorry, action not found", ""})
+		context.conn.WriteJSON(newResponse(context, 404, "Sorry, action not found"))
 	}
 
 }
