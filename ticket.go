@@ -79,7 +79,7 @@ func ticketParts(ticketString string, c ...*Ctx) (ID, UUID, IP string, expireTim
 		}
 
 		//output error to the console
-		log.Println("dnet: ticket string has unusual number of parts. It's invalid")
+		log.Println("[dnet] ticket string has unusual number of parts. It's invalid")
 		return ID, UUID, IP, expireTime, false
 	}
 
@@ -96,7 +96,7 @@ func ticketParts(ticketString string, c ...*Ctx) (ID, UUID, IP string, expireTim
 		}
 
 		// log the error to the console
-		log.Println("dnet: ", err)
+		log.Println("[dnet] ", err)
 		return ID, UUID, IP, expireTime, false
 	}
 
