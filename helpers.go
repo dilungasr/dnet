@@ -77,10 +77,12 @@ func NewLink(userID, linkID string, minutes ...time.Duration) (link string, err 
 type unionContext interface {
 	getAction() string
 	getID() string
+	getOriginalAction() string
 }
 
 // prepareRes prepares to send to the clients
-func prepareRes(c unionContext, funcName string, statusAndData []interface{}) response {
+func prepareRes(c unionContext, funcName string, statusAndData []interface{}, isOriginalAction ...bool) response {
+
 	dataIndex := 0
 	statusCode := 200
 
@@ -88,5 +90,5 @@ func prepareRes(c unionContext, funcName string, statusAndData []interface{}) re
 	assignData(&dataIndex, &statusCode, statusAndData, funcName)
 
 	// return the prepared response
-	return newResponse(c, statusCode, statusAndData[dataIndex])
+	return newResponse(c, statusCode, statusAndData[dataIndex], isOriginalAction...)
 }
