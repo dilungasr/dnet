@@ -51,7 +51,7 @@ func (c *Ctx) SendBack(statusAndData ...interface{}) {
 	// send back to the client
 	c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 	if err := c.conn.WriteJSON(res); err != nil {
-		panic(err)
+		log.Println("[dnet]", err)
 	}
 }
 
@@ -343,7 +343,7 @@ func (c *Ctx) Fire(action string) {
 // Use Bind(v interface{}) if you want to explicitly handle errors
 func (c *Ctx) Binder(v interface{}, msg ...string) (ok bool) {
 	if len(msg) == 0 {
-		msg[0] = "Unprocessable entities"
+		msg = []string{"Unprocessable entities"}
 	}
 
 	if err := mapstructure.Decode(c.data, v); err != nil {
