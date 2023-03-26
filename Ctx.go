@@ -26,10 +26,11 @@ type Ctx struct {
 
 	// Action is the action to fire
 	action string
-	//ID is  a user id to assocaite with the user connection
+	//ID of the user owning the connection
 	ID string
-	// Data stores data received from the client side
-	Data interface{}
+
+	// Data stores raw data received from the client side
+	data interface{}
 
 	// Rec is an id of the recipient
 	Rec string
@@ -49,16 +50,12 @@ type Ctx struct {
 	expireTime time.Time
 }
 
-// response models data sent to the client.
-type response struct {
-	// Action is
-	Action string `json:"action"`
-	//the status  code to be returned to the client
-	Status int `json:"status"`
-	// the true payload to be sent to the client
-	Data interface{} `json:"data"`
-	// Sender is the id of the sender
-	Sender string `json:"sender"`
+func (c Ctx) getAction() string {
+	return c.action
+}
+
+func (c Ctx) getID() string {
+	return c.ID
 }
 
 // constants
@@ -104,7 +101,7 @@ func (c *Ctx) readPump() {
 		if err != nil {
 
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("dnet: %v", err)
+				log.Printf("[dnet] %v", err)
 
 				// call the last seeen handler to update any last seen info
 			}
@@ -125,7 +122,7 @@ func (c *Ctx) readPump() {
 			c.values = make(map[string]interface{})
 		}
 		c.action = msg.Action
-		c.Data = msg.Data
+		c.data = msg.Data
 		c.Rec = msg.Rec
 
 		// routing user action
@@ -159,7 +156,7 @@ func (c *Ctx) writePump() {
 
 			// write the ping message
 			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-				log.Printf("dnet error: %v", err)
+				log.Printf("[dnet] %v", err)
 				return
 			}
 		}
@@ -181,7 +178,7 @@ func Connect(w http.ResponseWriter, r *http.Request, allowedOrigin ...string) {
 
 	//hub not started monitoring
 	if !hub.hasInitialized {
-		panic("dnet: dnet has not been initialized. Initialized dnet by calling the dnet.Init()")
+		panic("[dnet] dnet has not been initialized. Initialized dnet by calling the dnet.Init()")
 	}
 
 	// PROTECT UNAUTHORIZED ORIGINS
