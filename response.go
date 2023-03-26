@@ -20,9 +20,19 @@ func (res response) checkSource(source1, source2 unionContext) response {
 	return res
 }
 
-func newResponse(c unionContext, status int, data interface{}) response {
+func newResponse(c unionContext, status int, data interface{}, isOriginalAction ...bool) response {
+	if len(isOriginalAction) == 0 {
+		isOriginalAction = []bool{false}
+	}
+
+	action := c.getAction()
+
+	if isOriginalAction[0] {
+		action = c.getOriginalAction()
+	}
+
 	return response{
-		Action:   c.getAction(),
+		Action:   action,
 		Status:   status,
 		Data:     data,
 		Sender:   c.getID(),
