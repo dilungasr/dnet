@@ -12,6 +12,14 @@ type EContext struct {
 	ID string
 }
 
+func (ec EContext) getAction() string {
+	return ec.action
+}
+
+func (ec EContext) getID() string {
+	return ec.ID
+}
+
 // Context creates an external context for sending data to the websocket connections from a normal http connection.
 func Context(action string, userID ...string) EContext {
 	ID := ""
