@@ -40,6 +40,9 @@ type Ctx struct {
 	Authed bool
 	// IP is the ip address of the user
 	IP string
+	//connIP is anIP address from which a connection was initialized.
+	// it must match with the ticked IP for the connection to be authed
+	connIP string
 
 	// disposed tells wether the client context has been disposed or not
 	disposed bool
@@ -173,12 +176,12 @@ func (c *Ctx) expireContext() {
 	}
 }
 
-// Connect inits Dilunga Net's connection in the given endpoint
+// Connect inits connection in the given endpoint
 func Connect(w http.ResponseWriter, r *http.Request, allowedOrigin ...string) {
 
 	//hub not started monitoring
 	if !hub.hasInitialized {
-		panic("[dnet] dnet has not been initialized. Initialized dnet by calling the dnet.Init()")
+		panic("[dnet] dnet has not been initialized. Initialize dnet by calling the dnet.Init()")
 	}
 
 	// PROTECT UNAUTHORIZED ORIGINS
