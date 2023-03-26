@@ -46,7 +46,7 @@ func (c *Ctx) All(statusAndData ...interface{}) {
 //
 // Use sendMe() if you want to send to all of the sender's connections including the sending connection.
 func (c *Ctx) SendBack(statusAndData ...interface{}) {
-	res := prepareRes(c, "SendBack", statusAndData)
+	res := prepareRes(c, "SendBack", statusAndData, true)
 	res.IsSource = true
 
 	// send back to the client
@@ -324,6 +324,12 @@ func (c *Ctx) MarkAuthed(ID string) {
 // If you do not set the action to fire, the action you listened for it will be fired backward to the client too.
 func (c *Ctx) Fire(action string) {
 	c.action = action
+}
+
+// Refire resets action to the initial action before calling any Fire("/action") method.
+// In fact, the action becomes the same as it was fired by the client.
+func (c *Ctx) Refire() {
+	c.action = c.getOriginalAction()
 }
 
 /*
