@@ -115,7 +115,7 @@ func authenticateTicket(c *Ctx, encryptedTicketString string) (userID string, va
 
 	// split the ticket string to individal parts
 	userID, clientUUID, IP, expireTime, ok := ticketParts(ticketString)
-	if !ok {
+	if !ok || IP != c.IP {
 		return userID, false
 	}
 
@@ -135,7 +135,6 @@ func authenticateTicket(c *Ctx, encryptedTicketString string) (userID string, va
 	router.removeTicket(ticket.UUID, ticket.CipherText)
 	// mark authed
 	c.ID = userID
-	c.IP = IP
 	c.Authed = true
 
 	// return success to the caller

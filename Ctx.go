@@ -38,11 +38,8 @@ type Ctx struct {
 	goNext bool
 	// Authed  tells if the connection is authenticated or not
 	Authed bool
-	// IP is the ip address of the user
+	// IP address of the connection
 	IP string
-	//connIP is anIP address from which a connection was initialized.
-	// it must match with the ticked IP for the connection to be authed
-	connIP string
 
 	// disposed tells wether the client context has been disposed or not
 	disposed bool
@@ -209,9 +206,26 @@ func Connect(w http.ResponseWriter, r *http.Request, allowedOrigin ...string) {
 		return
 	}
 
+	// extract the connection IP address
+	IP, err := GetIP(r)
+	if err != nil {
+		log.Println("[dnet]", err)
+		return
+	}
+
 	// create the Ctx...  mark user as not authenticated
 	expireTime := time.Now().Local().Add(router.ticketAge)
-	context := &Ctx{hub: hub, send: make(chan interface{}, 256), conn: conn, Authed: false, expireTime: expireTime, disposed: false, loggedout: false}
+
+	context := &Ctx{
+		hub:        hub,
+		send:       make(chan interface{}, 256),
+		IP:         IP,
+		conn:       conn,
+		Authed:     false,
+		expireTime: expireTime,
+		disposed:   false,
+		loggedout:  false,
+	}
 	context.hub.register <- context
 
 	go context.readPump()
