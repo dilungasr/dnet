@@ -47,6 +47,7 @@ func (c *Ctx) All(statusAndData ...interface{}) {
 // Use sendMe() if you want to send to all of the sender's connections including the sending connection.
 func (c *Ctx) SendBack(statusAndData ...interface{}) {
 	res := prepareRes(c, "SendBack", statusAndData)
+	res.IsSource = true
 
 	// send back to the client
 	c.conn.SetWriteDeadline(time.Now().Add(writeWait))
