@@ -35,7 +35,7 @@ func (c *Ctx) All(statusAndData ...interface{}) {
 	// pass to all hub contexts to send to all other contexts
 	for context := range c.hub.contexts {
 		select {
-		case context.send <- res:
+		case context.send <- res.checkSource(c, context):
 		default:
 			deleteContext(context)
 		}
@@ -63,7 +63,7 @@ func (c *Ctx) Send(ID string, statusAndData ...interface{}) {
 	for context := range c.hub.contexts {
 		if context.ID == ID {
 			select {
-			case context.send <- res:
+			case context.send <- res.checkSource(c, context):
 			default:
 				deleteContext(context)
 			}
@@ -80,7 +80,7 @@ func (c *Ctx) SendMe(statusAndData ...interface{}) {
 	for context := range c.hub.contexts {
 		if context.ID == c.ID {
 			select {
-			case context.send <- res:
+			case context.send <- res.checkSource(c, context):
 			default:
 				deleteContext(context)
 			}
@@ -98,7 +98,7 @@ func (c *Ctx) Multicast(userIDs []string, statusAndData ...interface{}) {
 		for context := range c.hub.contexts {
 			if userID == context.ID {
 				select {
-				case context.send <- res:
+				case context.send <- res.checkSource(c, context):
 				default:
 					deleteContext(context)
 				}
@@ -124,7 +124,7 @@ func (c *Ctx) RoomAll(ID string, statusAndData ...interface{}) {
 			//   broadcast to all the members in the room
 			for _, context := range contexts {
 				select {
-				case context.send <- res:
+				case context.send <- res.checkSource(c, context):
 				default:
 					deleteContext(context)
 				}
@@ -148,7 +148,7 @@ func (c *Ctx) RoomBroadcast(ID string, statusAndData ...interface{}) {
 				// send to all members of the room execept the sender
 				if context != c {
 					select {
-					case context.send <- res:
+					case context.send <- res.checkSource(c, context):
 					default:
 						deleteContext(context)
 					}
@@ -332,15 +332,33 @@ func (c *Ctx) Fire(action string) {
 
 */
 
-// Binder is for extracting data from the client and storing it to the passed pointer v
-func (c *Ctx) Binder(v interface{}) (valid bool) {
-	if err := mapstructure.Decode(c.Data, v); err != nil {
-		log.Println("Dnet: ", err)
-		c.SendBack(422, "Unprocessable entities")
+// Binder extracts raw data, stores it in the passed pointer v
+// and implicitly sends 422 Unprocessable entities to the client when it's unable to decode data. You can provide a custom
+// client error message by passing it as msg argument. In addition to sending a client friendly error to the client it also logs
+// a raised error in console
+//
+// It returns true on success and false on failure. You can use this value to stop the execution in
+// the caller function by just using a return statement.
+//
+// Use Bind(v interface{}) if you want to explicitly handle errors
+func (c *Ctx) Binder(v interface{}, msg ...string) (ok bool) {
+	if len(msg) == 0 {
+		msg[0] = "Unprocessable entities"
+	}
+
+	if err := mapstructure.Decode(c.data, v); err != nil {
+		log.Println("[dnet] ", err)
+		c.SendBack(422, msg)
 		return false
 	}
 
 	return true
+}
+
+// Bind extracts raw data, stores it in the passed pointer v
+// and returns any raised error
+func (c *Ctx) Bind(v interface{}) (err error) {
+	return mapstructure.Decode(c.data, v)
 }
 
 /*
@@ -384,14 +402,14 @@ func (c *Ctx) Set(key string, val interface{}) {
 func (c *Ctx) Get(key string) (val interface{}, err error) {
 	val, ok := c.values[key]
 	if !ok {
-		return val, fmt.Errorf("dnet: " + "'" + key + "'" + " field is not registered in the context")
+		return val, fmt.Errorf("[dnet] " + "'" + key + "'" + " field is not registered in the context")
 	}
 
 	return val, nil
 
 }
 
-// Del deletes context value's field with a given key
+// Del deletes context value's field with a given keyc
 func (c *Ctx) Del(key string) {
 	delete(c.values, key)
 }
