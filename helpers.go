@@ -78,6 +78,7 @@ type unionContext interface {
 	getAction() string
 	getID() string
 	getOriginalAction() string
+	getAsyncID() string
 }
 
 // prepareRes prepares to send to the clients
