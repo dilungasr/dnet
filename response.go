@@ -12,12 +12,23 @@ type response struct {
 	Sender string `json:"sender"`
 
 	IsSource bool `json:"isSource"`
+
+	AsyncID string `json:"asyncId"`
 }
 
 func (res response) checkSource(source1, source2 unionContext) response {
 	res.IsSource = source1 == source2
 
+	if res.IsSource {
+		res.AsyncID = source1.getAsyncID()
+	}
+
 	return res
+}
+
+func (res *response) setSource(ctx *Ctx) {
+	res.IsSource = true
+	res.AsyncID = ctx.asyncID
 }
 
 func newResponse(c unionContext, status int, data interface{}, isOriginalAction ...bool) response {
