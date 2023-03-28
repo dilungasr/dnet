@@ -51,6 +51,9 @@ type Ctx struct {
 	loggedout bool
 	// expireTime is the time for request to expire if not authenticated yet
 	expireTime time.Time
+
+	//async ID holds the id of the front end asynchronous process call
+	asyncID string
 }
 
 func (c Ctx) getAction() string {
@@ -62,6 +65,9 @@ func (c Ctx) getOriginalAction() string {
 
 func (c Ctx) getID() string {
 	return c.ID
+}
+func (c Ctx) getAsyncID() string {
+	return c.asyncID
 }
 
 // constants
@@ -86,6 +92,9 @@ type message struct {
 	Rec string `json:"rec"`
 	// Data is the main payload to send to the recipient
 	Data interface{} `json:"data"`
+
+	//id of asynchronous process call
+	AsyncID string `json:"asyncId"`
 }
 
 // readPump for reading the message from the websocket connection
@@ -131,6 +140,7 @@ func (c *Ctx) readPump() {
 		c.originalAction = msg.Action
 		c.data = msg.Data
 		c.Rec = msg.Rec
+		c.asyncID = msg.AsyncID
 
 		// routing user action
 		router.Route(msg.Action, c)
