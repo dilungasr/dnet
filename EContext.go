@@ -25,6 +25,10 @@ func (ec EContext) getID() string {
 	return ec.ID
 }
 
+func (ec EContext) getAsyncID() string {
+	return ""
+}
+
 // Context creates an external context for sending data to the websocket connections from a normal http connection.
 func Context(action string, userID ...string) EContext {
 	ID := ""
