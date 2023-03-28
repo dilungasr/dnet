@@ -106,7 +106,7 @@ func (r *MainRouter) Route(IncomingAction string, context *Ctx) {
 	if !isMatch {
 		resetWriteDeadline(context)
 		res := newResponse(context, 404, "Sorry, action not found")
-		res.IsSource = true
+		res.setSource(context)
 
 		context.conn.WriteJSON(res)
 	}
