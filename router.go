@@ -213,7 +213,7 @@ func (router *MainRouter) removeTicket(UUID, cipherText string) {
 // app-wise router
 var router *MainRouter = &MainRouter{
 	actionHandlers: make(map[string][]ActionHandler), routeMatchers: make(map[string][]ActionHandler),
-	ticketSecrete: radi.RandString(32), ticketIV: radi.RandBytes(16),
+	ticketSecrete: radi.RandStringNoErr(32), ticketIV: radi.RandBytesNoErr(16),
 	ticketAge: 30 * time.Second,
 	maxSize:   512,
 }
