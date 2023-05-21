@@ -4,6 +4,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dilungasr/dnet/logger"
+
 	"github.com/dilungasr/radi"
 )
 
@@ -20,9 +22,10 @@ import (
 //
 // 2 means everything is fine! and with this status you can get the user ID.
 func AuthLink(link string) (userID, linkID string, status int) {
-	plainLink, ok := radi.Decrypt(link, router.ticketSecrete, router.ticketIV)
+	plainLink, err := radi.Decrypt(link, router.ticketSecrete, router.ticketIV)
 
-	if !ok {
+	if err != nil {
+		logger.Log(err)
 		return userID, linkID, 1
 	}
 
@@ -70,7 +73,7 @@ func NewLink(userID, linkID string, minutes ...time.Duration) (link string, err 
 
 	expireTimeString := string(expireTimeBytes)
 
-	return radi.Encrypt(userID+","+linkID+","+expireTimeString, router.ticketSecrete, router.ticketIV), nil
+	return radi.Encrypt(userID+","+linkID+","+expireTimeString, router.ticketSecrete, router.ticketIV)
 }
 
 // contexts groups external context and  inner context
