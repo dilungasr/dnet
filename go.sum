@@ -1,7 +1,7 @@
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/dilungasr/radi v1.0.68-beta h1:eTwNghaAZKH85/F5JzFbD637q2VEJgHVTDy5HOxq744=
-github.com/dilungasr/radi v1.0.68-beta/go.mod h1:H44UtSdrhs32KvCyvkDroONeYxDAEnCUssVvqGagvrA=
+github.com/dilungasr/radi v1.1.2 h1:dlYSu7Jr0w4JoB5lVod9QfghWM6jzW4qRbsvmUMewOE=
+github.com/dilungasr/radi v1.1.2/go.mod h1:H44UtSdrhs32KvCyvkDroONeYxDAEnCUssVvqGagvrA=
 github.com/dilungasr/tanzanite v1.0.217 h1:2oZj4LmU/qpQnF2BpgA79NfLOr/pvwcbwHUIeg2ZKQ8=
 github.com/dilungasr/tanzanite v1.0.217/go.mod h1:QzuoOW6u4asmGtkdbJRY37WfCF5zPQ9z+Qo+FLchCh0=
 github.com/gin-contrib/sse v0.1.0/go.mod h1:RHrZQHXnP2xjPF+u1gW/2HnVO7nvIa9PG3Gm+fLHvGI=
