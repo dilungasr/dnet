@@ -28,7 +28,7 @@ var hub *Hub = &Hub{
 func Init(options ...Options) {
 	// makesure that Init is called only once
 	if hub.hasInitialized {
-		panic("[dnet] don't call init more once in your program")
+		panic("[dnet] don't call init more than once in your program")
 	}
 
 	//  update Router options if user gave any
