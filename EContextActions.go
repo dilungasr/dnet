@@ -18,6 +18,23 @@ func (c *EContext) Broadcast(statusAndData ...interface{}) {
 	}
 }
 
+// SendByFilter sends to every context where the filter returns true
+func (c *EContext) SendByFilter(filter FilterFunc, statusAndData ...interface{}) {
+	res := prepareRes(c, "SendByFilter", statusAndData)
+
+	// find the user to which the dataIndex should be sent to
+	for context := range c.hub.contexts {
+		if filter(context) {
+			select {
+			case context.send <- res.checkSource(c, context):
+			default:
+				deleteContext(context)
+			}
+		}
+	}
+
+}
+
 // Send sends to only one client of the specified ID
 func (c *EContext) Send(ID string, statusAndData ...interface{}) {
 	res := prepareRes(c, "Send", statusAndData)

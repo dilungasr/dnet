@@ -73,6 +73,26 @@ func (c *Ctx) Send(ID string, statusAndData ...interface{}) {
 
 }
 
+// FilterFunc returns true to include or false to filter out
+type FilterFunc func(c *Ctx) bool
+
+// SendByFilter sends to every context where the filter returns true
+func (c *Ctx) SendByFilter(filter FilterFunc, statusAndData ...interface{}) {
+	res := prepareRes(c, "SendByFilter", statusAndData)
+
+	// find the user to which the dataIndex should be sent to
+	for context := range c.hub.contexts {
+		if filter(context) {
+			select {
+			case context.send <- res.checkSource(c, context):
+			default:
+				deleteContext(context)
+			}
+		}
+	}
+
+}
+
 // SendMe sends to all of the sender's open connections
 func (c *Ctx) SendMe(statusAndData ...interface{}) {
 	res := prepareRes(c, "SendMe", statusAndData)
