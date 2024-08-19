@@ -10,6 +10,9 @@ import (
 // ActionHandler is a function wich receives Ctx
 type ActionHandler func(*Ctx)
 
+// LastseenHandler handles the last seen of the connection
+type LastSeenHandler func(c *Ctx, isLast bool)
+
 // Options is used to take all the
 type Options struct {
 	TicketAge time.Duration
@@ -24,7 +27,7 @@ type MainRouter struct {
 	// actionHandlers are handlers to executed for the particular action
 	actionHandlers map[string][]ActionHandler
 	// lastSeenHandler is called when the connection gets closed
-	lastSeenHandler ActionHandler
+	lastSeenHandler LastSeenHandler
 	// tells wether use set the last seen or not
 	isLastSeenHandlerSet bool
 	// tickets is the store place of all tickets given to the user before they expire
@@ -129,18 +132,16 @@ func (r *MainRouter) lastSeen(c *Ctx) {
 		}
 	}
 
-	//if there are no any other contexts online ...then call the last seeen handler
-	if contextCount == 1 {
-		//check if lastSeen hanlder is set
-		if r.isLastSeenHandlerSet {
-			r.lastSeenHandler(c)
-		}
+	//check if lastSeen hanlder is set
+	if r.isLastSeenHandlerSet {
+		r.lastSeenHandler(c, contextCount == 1)
 	}
+
 }
 
 // LastSeen is called when the authenticated user gets offline or logs out
 // It's very useful for setting the last seen of the user connection
-func LastSeen(handler ActionHandler) {
+func LastSeen(handler LastSeenHandler) {
 	//  the lastSeenHandler is set
 	router.isLastSeenHandlerSet = true
 
