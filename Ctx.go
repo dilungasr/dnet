@@ -8,9 +8,10 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// By Dilunga SR<dilungasr@gmail.com>
-// wwww.axismedium.com
-// twitter: @dilungasr
+// By Dilunga SR<dilungathegreat@gmail.com>
+// wwww.dilunga.dukapoint.com
+// twitter: @thegreatdilunga
+// instagram: @thegreatdilunga
 
 // Ctx is a middleman between the websocket connection and the Hub.
 // Ctx is stored in the dnet hub and hence it is an inside and persistent context.
