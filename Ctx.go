@@ -55,6 +55,12 @@ type Ctx struct {
 
 	//async ID holds the id of the front end asynchronous process call
 	asyncID string
+
+	// R is the *http.Request passed on the dnet.Connect()
+	R *http.Request
+
+	// W is the http.ResponseWriter passed on the dnet.Connect()
+	W http.ResponseWriter
 }
 
 func (c Ctx) getAction() string {
@@ -243,6 +249,8 @@ func Connect(w http.ResponseWriter, r *http.Request, allowedOrigin ...string) {
 		expireTime: expireTime,
 		disposed:   false,
 		loggedout:  false,
+		R:          r,
+		W:          w,
 	}
 	context.hub.register <- context
 
