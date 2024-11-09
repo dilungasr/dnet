@@ -41,7 +41,7 @@ func newRouterTicket(r *http.Request, ID string) (ticket routerTicket, err error
 
 	ticketString := strings.Join([]string{ID, UUID.String(), IP, expireTimeString}, ",")
 
-	cipherText, err := radi.Encrypt(ticketString, router.ticketSecrete, router.ticketIV)
+	cipherText, err := radi.Encrypt(ticketString, router.ticketSecrete)
 	if err != nil {
 		return ticket, err
 	}
@@ -113,7 +113,7 @@ func ticketParts(ticketString string, c ...*Ctx) (ID, UUID, IP string, expireTim
 // authenticateTicket authenticates the given encrypted ticket link from the client and returns userID and valid boolean
 func authenticateTicket(c *Ctx, encryptedTicketString string) (userID string, valid bool) {
 	//get the ticket string from the client to plain text
-	ticketString, err := radi.Decrypt(encryptedTicketString, router.ticketSecrete, router.ticketIV)
+	ticketString, err := radi.Decrypt(encryptedTicketString, router.ticketSecrete)
 	// if the ticketString is not avalid base64 string
 	if err != nil {
 		c.SendBack(400, "Bad Request")

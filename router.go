@@ -32,8 +32,6 @@ type MainRouter struct {
 	isLastSeenHandlerSet bool
 	// tickets is the store place of all tickets given to the user before they expire
 	tickets []routerTicket
-	// ticketKey is the key for cryptography of the ticket
-	ticketIV []byte
 
 	// max message size
 	maxSize int64
@@ -214,7 +212,7 @@ func (router *MainRouter) removeTicket(UUID, cipherText string) {
 // app-wise router
 var router *MainRouter = &MainRouter{
 	actionHandlers: make(map[string][]ActionHandler), routeMatchers: make(map[string][]ActionHandler),
-	ticketSecrete: radi.RandStringNoErr(32), ticketIV: radi.RandBytesNoErr(16),
-	ticketAge: 30 * time.Second,
-	maxSize:   512,
+	ticketSecrete: radi.RandStringNoErr(32),
+	ticketAge:     30 * time.Second,
+	maxSize:       512,
 }
