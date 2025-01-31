@@ -1,6 +1,8 @@
 package dnet
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Hub maintains and manages dnet contexts
 type Hub struct {

@@ -3,7 +3,6 @@ package dnet
 import (
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/mitchellh/mapstructure"
 )
@@ -50,9 +49,13 @@ func (c *Ctx) SendBack(statusAndData ...interface{}) {
 	res.setSource(c)
 
 	// send back to the client
-	c.conn.SetWriteDeadline(time.Now().Add(writeWait))
-	if err := c.conn.WriteJSON(res); err != nil {
-		log.Println("[dnet]", err)
+
+	select {
+	case c.send <- res:
+	default:
+		go func() {
+			c.send <- res
+		}()
 	}
 }
 
