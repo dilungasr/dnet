@@ -73,6 +73,19 @@ func SendTicket(r *http.Request, w http.ResponseWriter, ID string) {
 
 }
 
+// NewTicket creates and returns encrypted ticket
+func NewTicket(r *http.Request, ID string) (ticket string, err error) {
+	// create a new ticket
+	rTicket, err := newRouterTicket(r, ID)
+	if err != nil {
+		return ticket, err
+	}
+
+	ticket = rTicket.CipherText
+
+	return ticket, err
+}
+
 // ticketParts splits the ticket string to get the indiviadial elements
 func ticketParts(ticketString string, c ...*Ctx) (ID, UUID, IP string, expireTime time.Time, ok bool) {
 	ticketPartsSlice := strings.Split(ticketString, ",")
