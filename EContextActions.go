@@ -35,6 +35,13 @@ func (c *EContext) SendByFilter(filter FilterFunc, statusAndData ...interface{})
 
 }
 
+// Calls senderFunc for each context on the dnet hub and passes it on the function
+func (c *EContext) SendByFunc(senderFunc ActionHandler) {
+	for context := range c.hub.contexts {
+		senderFunc(context)
+	}
+}
+
 // Send sends to only one client of the specified ID
 func (c *EContext) Send(ID string, statusAndData ...interface{}) {
 	res := prepareRes(c, "Send", statusAndData)

@@ -59,6 +59,22 @@ func (c *Ctx) SendBack(statusAndData ...interface{}) {
 	}
 }
 
+// SendSelf sends to the current context. Similar to SendBack() in every way
+func (c *Ctx) SendSelf(statusAndData ...interface{}) {
+	res := prepareRes(c, "SendBack", statusAndData, true)
+	res.setSource(c)
+
+	// send back to the client
+
+	select {
+	case c.send <- res:
+	default:
+		go func() {
+			c.send <- res
+		}()
+	}
+}
+
 // Send sends to one client only
 func (c *Ctx) Send(ID string, statusAndData ...interface{}) {
 	res := prepareRes(c, "Send", statusAndData)
@@ -94,6 +110,13 @@ func (c *Ctx) SendByFilter(filter FilterFunc, statusAndData ...interface{}) {
 		}
 	}
 
+}
+
+// Calls senderFunc for each context on the dnet hub and passes it on the function
+func (c *Ctx) SendByFunc(senderFunc ActionHandler) {
+	for context := range c.hub.contexts {
+		senderFunc(context)
+	}
 }
 
 // SendMe sends to all of the sender's open connections
