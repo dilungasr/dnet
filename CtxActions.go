@@ -42,8 +42,7 @@ func (c *Ctx) All(statusAndData ...interface{}) {
 }
 
 // SendBack sends back to the sender's sending connection only.
-//
-// Use sendMe() if you want to send to all of the sender's connections including the sending connection.
+// It sends to the original action of the sender. Use SendSelf() if you want to send to the current action.
 func (c *Ctx) SendBack(statusAndData ...interface{}) {
 	res := prepareRes(c, "SendBack", statusAndData, true)
 	res.setSource(c)
@@ -59,9 +58,10 @@ func (c *Ctx) SendBack(statusAndData ...interface{}) {
 	}
 }
 
-// SendSelf sends to the current context. Similar to SendBack() in every way
+// SendSelf sends to the current context's action. Similar to SendBack() but it does
+// not send to the original action but to the current action.
 func (c *Ctx) SendSelf(statusAndData ...interface{}) {
-	res := prepareRes(c, "SendSelf", statusAndData, true)
+	res := prepareRes(c, "SendSelf", statusAndData)
 	res.setSource(c)
 
 	// send back to the client
