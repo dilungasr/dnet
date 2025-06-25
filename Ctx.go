@@ -63,6 +63,13 @@ type Ctx struct {
 	W http.ResponseWriter
 }
 
+// CloneWithEmptyValues clones the context and returns a new one with empty values
+func (c *Ctx) CloneWithEmptyValues() *Ctx {
+	newCtx := *c
+	newCtx.values = make(map[string]interface{})
+	return &newCtx
+}
+
 func (c Ctx) getAction() string {
 	return c.action
 }

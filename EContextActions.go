@@ -24,7 +24,7 @@ func (c *EContext) SendByFilter(filter FilterFunc, statusAndData ...interface{})
 
 	// find the user to which the dataIndex should be sent to
 	for context := range c.hub.contexts {
-		if filter(context) {
+		if filter(context.CloneWithEmptyValues()) {
 			select {
 			case context.send <- res.checkSource(c, context):
 			default:
@@ -38,7 +38,7 @@ func (c *EContext) SendByFilter(filter FilterFunc, statusAndData ...interface{})
 // Calls senderFunc for each context on the dnet hub and passes it on the function
 func (c *EContext) SendByFunc(senderFunc ActionHandler) {
 	for context := range c.hub.contexts {
-		senderFunc(context)
+		senderFunc(context.CloneWithEmptyValues())
 	}
 }
 
