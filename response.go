@@ -26,9 +26,15 @@ func (res response) checkSource(source1, source2 unionContext) response {
 	return res
 }
 
+// Tells if the response is from the source sender or not
 func (res *response) setSource(ctx *Ctx) {
-	res.IsSource = true
-	res.AsyncID = ctx.asyncID
+	// set true if it's not a clone
+	isOrg := ctx.originalCtx == nil
+	res.IsSource = isOrg
+
+	if isOrg {
+		res.AsyncID = ctx.asyncID
+	}
 }
 
 func newResponse(c unionContext, status int, data interface{}, isOriginalAction ...bool) response {
