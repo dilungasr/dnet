@@ -61,13 +61,22 @@ type Ctx struct {
 
 	// W is the http.ResponseWriter passed on the dnet.Connect()
 	W http.ResponseWriter
+
+	// originalCtx is the context before the clone for clonned contexts
+	originalCtx *Ctx
 }
 
 // CloneWithEmptyValues clones the context and returns a new one with empty values
 func (c *Ctx) CloneWithEmptyValues() *Ctx {
 	newCtx := *c
 	newCtx.values = make(map[string]interface{})
+	newCtx.originalCtx = c
 	return &newCtx
+}
+
+// GetOriginalCtx returns the original context before the clone for clonned contexts
+func (c *Ctx) GetOriginalCtx() *Ctx {
+	return c.originalCtx
 }
 
 // GetAction gets the action of the context
