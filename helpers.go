@@ -78,9 +78,9 @@ func NewLink(userID, linkID string, minutes ...time.Duration) (link string, err 
 
 // contexts groups external context and  inner context
 type unionContext interface {
-	getAction() string
+	GetAction() string
 	getID() string
-	getOriginalAction() string
+	GetOriginalAction() string
 	getAsyncID() string
 }
 

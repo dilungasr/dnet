@@ -36,10 +36,10 @@ func newResponse(c unionContext, status int, data interface{}, isOriginalAction 
 		isOriginalAction = []bool{false}
 	}
 
-	action := c.getAction()
+	action := c.GetAction()
 
 	if isOriginalAction[0] {
-		action = c.getOriginalAction()
+		action = c.GetOriginalAction()
 	}
 
 	return response{

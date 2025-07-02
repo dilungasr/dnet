@@ -14,10 +14,10 @@ type EContext struct {
 	ID string
 }
 
-func (ec EContext) getAction() string {
+func (ec EContext) GetAction() string {
 	return ec.action
 }
-func (ec EContext) getOriginalAction() string {
+func (ec EContext) GetOriginalAction() string {
 	return ec.originalAction
 }
 

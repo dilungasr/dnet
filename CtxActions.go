@@ -375,7 +375,7 @@ func (c *Ctx) Fire(action string) {
 // Refire resets action to the initial action before calling any Fire("/action") method.
 // In fact, the action becomes the same as it was fired by the client.
 func (c *Ctx) Refire() {
-	c.action = c.getOriginalAction()
+	c.action = c.GetOriginalAction()
 }
 
 /*

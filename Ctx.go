@@ -70,10 +70,13 @@ func (c *Ctx) CloneWithEmptyValues() *Ctx {
 	return &newCtx
 }
 
-func (c Ctx) getAction() string {
+// GetAction gets the action of the context
+func (c *Ctx) GetAction() string {
 	return c.action
 }
-func (c Ctx) getOriginalAction() string {
+
+// GetOriginalAction gets the original action of the context
+func (c *Ctx) GetOriginalAction() string {
 	return c.originalAction
 }
 

@@ -92,7 +92,7 @@ func (c *EContext) Fire(action string) {
 
 // Refire resets action to the initial action before calling any Fire("/action") method.
 func (c *EContext) Refire() {
-	c.action = c.getOriginalAction()
+	c.action = c.GetOriginalAction()
 }
 
 /*
