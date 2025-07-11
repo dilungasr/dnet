@@ -121,13 +121,17 @@ func (c *Ctx) SendByFunc(senderFunc ActionHandler) {
 
 // SendMe sends to all of the sender's open connections
 func (c *Ctx) SendMe(statusAndData ...interface{}) {
+	// send to the sender's connection first
+	c.SendSelf(statusAndData...)
+
+	// send to all other connections except the sender
 	res := prepareRes(c, "SendMe", statusAndData)
 
 	// find the user to which the dataIndex should be sent to
 	for context := range c.hub.contexts {
-		if context.ID == c.ID {
+		if context.ID == c.ID && context != c {
 			select {
-			case context.send <- res.checkSource(c, context):
+			case context.send <- res:
 			default:
 				deleteContext(context)
 			}
