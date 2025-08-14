@@ -87,14 +87,17 @@ func (r *MainRouter) Route(IncomingAction string, context *Ctx) {
 
 					// stop if the has not passed the middleware... ie c.Next() has not been called
 					if !context.goNext {
-						return
+						break
 					}
-
 				}
+
+				context.ClearTemp()
+				return
 			} else if len(handlers) == 1 {
 
 				//if the action has only one actionHandler
 				handlers[0](context)
+				context.ClearTemp()
 
 			} else {
 				// if no handler by the user

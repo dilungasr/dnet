@@ -477,6 +477,34 @@ func (c *Ctx) Clear() {
 	c.values = map[string]interface{}{}
 }
 
+// SetTemp sets a temporary value for the request-response cycle
+func (c *Ctx) SetTemp(key string, value interface{}) {
+	if c.tempValues == nil {
+		c.tempValues = make(map[string]interface{})
+	}
+	c.tempValues[key] = value
+}
+
+// GetTemp retrieves a temporary value. Returns nil if not found
+func (c *Ctx) GetTemp(key string) interface{} {
+	if c.tempValues == nil {
+		return nil
+	}
+	return c.tempValues[key]
+}
+
+// DelTemp deletes a temporary value
+func (c *Ctx) DelTemp(key string) {
+	if c.tempValues != nil {
+		delete(c.tempValues, key)
+	}
+}
+
+// ClearTemp clears all temporary values at the end of the request
+func (c *Ctx) ClearTemp() {
+	c.tempValues = make(map[string]interface{})
+}
+
 /*
   -----------------------------------------------------------
   |  WORKING WITH EMAILS   |

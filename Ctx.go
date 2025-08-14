@@ -22,6 +22,9 @@ type Ctx struct {
 	send chan interface{}
 	// values is for installing request values
 	values map[string]interface{}
+
+	// temporary  values for the context request-response cycle
+	tempValues map[string]interface{}
 	//conn is a websocket connection
 	conn *websocket.Conn
 
