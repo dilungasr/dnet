@@ -2,7 +2,6 @@ package dnet
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 	"strings"
@@ -13,7 +12,6 @@ func GetIP(r *http.Request) (ip string, err error) {
 	// get ip from the X-REAL-IP
 	ip = r.Header.Get("X-REAL-IP")
 	netIP := net.ParseIP(ip)
-	devLogger("X-REAL-IP:", ip)
 	if netIP != nil {
 		return ip, nil
 	}
@@ -42,8 +40,6 @@ func GetIP(r *http.Request) (ip string, err error) {
 	if netIP != nil {
 		return ip, nil
 	}
-
-	log.Println("X-FORWARDED-FOR:", netIP)
 
 	// if no valid ip found
 	return "", fmt.Errorf("[dnet] no valid IP Address found ")

@@ -70,18 +70,17 @@ func SendTicket(r *http.Request, w http.ResponseWriter, ID string) {
 
 	// send the ticket to the client
 	jsonSender(w, 200, Map{"ticket": ticket.CipherText})
-	devLogger("Ticket sent", ticket)
 
 }
 
-func devLogger(v ...any) {
-	logs := []any{"[dnet-dev]"}
-	logs = append(logs, v...)
+// func devLogger(v ...any) {
+// 	logs := []any{"[dnet-dev]"}
+// 	logs = append(logs, v...)
 
-	// print the stack trace
-	// log.Println(string(debug.Stack()))
-	log.Println(logs...)
-}
+// 	// print the stack trace
+// 	// log.Println(string(debug.Stack()))
+// 	log.Println(logs...)
+// }
 
 // NewTicket creates and returns encrypted ticket
 func NewTicket(r *http.Request, ID string) (ticket string, err error) {
@@ -92,7 +91,6 @@ func NewTicket(r *http.Request, ID string) (ticket string, err error) {
 	}
 
 	ticket = rTicket.CipherText
-	devLogger("NewTicket created:", ticket)
 	return ticket, err
 }
 
@@ -135,7 +133,6 @@ func ticketParts(ticketString string, c ...*Ctx) (ID, UUID, IP string, expireTim
 
 // authenticateTicket authenticates the given encrypted ticket link from the client and returns userID and valid boolean
 func authenticateTicket(c *Ctx, encryptedTicketString string) (userID string, valid bool) {
-	devLogger("authenticateTicket called")
 	//get the ticket string from the client to plain text
 	ticketString, err := radi.Decrypt(encryptedTicketString, router.ticketSecrete)
 	// if the ticketString is not avalid base64 string
@@ -143,24 +140,20 @@ func authenticateTicket(c *Ctx, encryptedTicketString string) (userID string, va
 		c.SendBack(400, "Bad Request")
 		return userID, false
 	}
-	devLogger("authenticateTicket ticketString:", ticketString)
 
 	// split the ticket string to individal parts
-	userID, clientUUID, IP, expireTime, ok := ticketParts(ticketString)
-	devLogger("UserID:", userID, "clientUUID:", clientUUID, "IP:", IP, "expireTime:", expireTime, "ok:", ok)
-	if !ok || IP != c.IP {
+	userID, clientUUID, _, expireTime, ok := ticketParts(ticketString)
+	if !ok {
 		return userID, false
 	}
 
 	ticket, found := router.findTicket(clientUUID, encryptedTicketString)
-	devLogger("Is ticket found:", found)
 	if !found {
 		return userID, false
 	}
 
 	//  check if not expired
 	if hasExpired(expireTime) {
-		devLogger("Ticket expired")
 		//  remove the ticket
 		router.removeTicket(ticket.UUID, ticket.CipherText)
 		return userID, false
@@ -171,8 +164,6 @@ func authenticateTicket(c *Ctx, encryptedTicketString string) (userID string, va
 	// mark authed
 	c.ID = userID
 	c.Authed = true
-
-	devLogger("Ticket authenticated...")
 
 	// return success to the caller
 	return userID, true
